@@ -795,12 +795,25 @@ int printInfo(uint8_t* text, int curr, int max)
     return read;
 }
 
+int interpret;
+struct CPU *cpu;
+uint8_t *mem;
 
 int main(int argc, char** argv)
 {
-    if(argc != 2)
+    if(argc != 3)
     {
-        printf("Wrong input: please enter a path to a binary executable.");
+        printf("Wrong input: please enter a path to a binary executable and a mode to execute.");
+        return 1;
+    }
+    
+    if(strcmp(argv[2], "-d") == 0)
+        interpret = 0;
+    else if (strcmp(argv[2], "-m") == 0)
+        interpret = 1;
+    else
+    {
+        printf("Wrong input: please enter a correct mode of execution.");
         return 1;
     }
 
@@ -819,16 +832,29 @@ int main(int argc, char** argv)
     
     uint8_t* text = malloc(header->a_text);
     a = fread(text, header->a_text, 1, file);
+
+    mem = malloc(header->a_data);
+    a = fread(mem, header->a_data, 1, file);
     
     int curr = 0;
 
+    if(interpret)
+    {
+        printf(" AX   BX   CX   DX   SP   BP   SI   DI  FLAGS IP\n");
+        cpu = malloc(sizeof(struct CPU));
+        memset(cpu, 0, sizeof(struct CPU));
+    }
+    
     while(curr < header->a_text)
     {
-        printf("%04x: ", curr);
+        if(!interpret)
+            printf("%04x: ", curr);
         curr += printInfo(text, curr, header->a_text);
     }
 
     free(header);
     free(text);
     fclose(file);
+    if(interpret)
+        free(cpu);
 }

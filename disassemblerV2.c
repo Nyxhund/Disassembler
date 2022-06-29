@@ -833,22 +833,27 @@ int main(int argc, char** argv)
     uint8_t* text = malloc(header->a_text);
     a = fread(text, header->a_text, 1, file);
 
-    mem = malloc(header->a_data);
+    mem = malloc(0xffff);
     a = fread(mem, header->a_data, 1, file);
     
     int curr = 0;
 
+    cpu = malloc(sizeof(struct CPU));
+    memset(cpu, 0, sizeof(struct CPU));
+    cpu->registers[4] = 0xffdc;
+    mem[0xffdc] = 0x01;
+    mem[0xffde] = 0xe6;
+    mem[0xffdf] = 0xff;
+
     if(interpret)
-    {
         printf(" AX   BX   CX   DX   SP   BP   SI   DI  FLAGS IP\n");
-        cpu = malloc(sizeof(struct CPU));
-        memset(cpu, 0, sizeof(struct CPU));
-    }
     
     while(curr < header->a_text)
     {
-        if(!interpret)
+        if (!interpret)
             printf("%04x: ", curr);
+        else
+            printRegisters(curr);
         curr += printInfo(text, curr, header->a_text);
     }
 

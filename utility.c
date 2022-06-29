@@ -53,10 +53,10 @@ struct pair* getRmAddress(uint8_t rm, uint8_t mod, uint16_t disp, uint8_t word)
         switch(rm)
         {
             case 0x00:
-                a->disp = *getRegister16(1) + *getRegister16(6);
+                a->disp = *getRegister16(3) + *getRegister16(6);
                 break;
             case 0x01:
-                a->disp = *getRegister16(1) + *getRegister16(7);
+                a->disp = *getRegister16(3) + *getRegister16(7);
                 break;
             case 0x02:
                 a->disp = *getRegister16(5) + *getRegister16(6);
@@ -74,7 +74,7 @@ struct pair* getRmAddress(uint8_t rm, uint8_t mod, uint16_t disp, uint8_t word)
                 a->disp = *getRegister16(5);
                 break;
             case 0x07:
-                a->disp = *getRegister16(1);
+                a->disp = *getRegister16(3);
                 break;
         }
 
@@ -169,7 +169,7 @@ void printReadBytes(int read, uint8_t* text, int curr)
 
 void printRegisters(int curr)
 {
-    printf("%04x %04x %04x %04x %04x %04x %04x %04x ", cpu->registers[0], cpu->registers[1], cpu->registers[2], cpu->registers[3], cpu->registers[4], cpu->registers[5], cpu->registers[6], cpu->registers[7]);
+    printf("%04x %04x %04x %04x %04x %04x %04x %04x ", cpu->registers[0], cpu->registers[3], cpu->registers[2], cpu->registers[1], cpu->registers[4], cpu->registers[5], cpu->registers[6], cpu->registers[7]);
     
     if(cpu->O) //  OsZc
         printf("O");
@@ -192,4 +192,35 @@ void printRegisters(int curr)
         printf("-");
 
     printf(" %04x:", curr);
+}
+
+void setFlagsZAndS8(uint8_t val)
+{
+    if (val == 0x00)
+        cpu->Z = 1;
+    else
+        cpu->Z = 0;
+
+    if (val >= 0x80)
+        cpu->S = 1;
+    else
+        cpu->S = 0;
+}
+
+void setFlagsZAndS16(uint16_t val)
+{
+    if (val == 0x0000)
+        cpu->Z = 1;
+    else
+        cpu->Z = 0;
+
+    if (val >= 0x8000)
+        cpu->S = 1;
+    else
+        cpu->S = 0;
+}
+
+void printMemoryChange(uint16_t addr)
+{
+    printf(" ;[%04x]%04x", addr, mem[addr]);
 }

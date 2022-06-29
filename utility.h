@@ -36,4 +36,9 @@ void setRegister16(uint8_t reg, uint16_t val);
 uint8_t* getRegister8(uint8_t reg);
 void setRegister8(uint8_t reg, uint8_t val);
 
+void setFlagsZAndS8(uint8_t val);
+void setFlagsZAndS16(uint16_t val);
+
+void printMemoryChange(uint16_t addr);
+
 #endif

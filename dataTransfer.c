@@ -33,7 +33,8 @@ int RegMemtofromReg(uint8_t* text, int curr, uint8_t dir, uint8_t word)
     {
         read = 2;
     }
-   
+    
+
     struct pair *a = getRmAddress(rm, mod, disp, word);
     if(dir == 0x00) // INTERPRETOR
     {
@@ -70,12 +71,6 @@ int RegMemtofromReg(uint8_t* text, int curr, uint8_t dir, uint8_t word)
                 setRegister16(reg, *getRegister16(a->id));
         }
     }
-    free(a);
-
-    if(interpret)
-    {
-        printRegisters(curr);
-    }
 
     printReadBytes(read, text, curr);
     printf("mov ");
@@ -85,9 +80,9 @@ int RegMemtofromReg(uint8_t* text, int curr, uint8_t dir, uint8_t word)
         printRm(rm, mod, disp, word, 0x00);
     
         if(word == 0x00)
-            printf(", %s\n", regByte[reg]);
+            printf(", %s", regByte[reg]);
         else
-            printf(", %s\n", regWord[reg]);
+            printf(", %s", regWord[reg]);
     }
     else
     {
@@ -97,8 +92,12 @@ int RegMemtofromReg(uint8_t* text, int curr, uint8_t dir, uint8_t word)
             printf("%s, ", regWord[reg]);
 
         printRm(rm, mod, disp, word, 0x00);
-        printf("\n");
     }
+
+    if (a->id == 9)
+        printMemoryChange(a->disp);
+    free(a);
+    printf("\n");
 
     return read;
 }
@@ -144,6 +143,7 @@ int immediateToRegMem(uint8_t* text, int curr, uint8_t word)
             data = text[curr+3] * 256 + text[curr+2];
     }
 
+
     struct pair* a = getRmAddress(rm, mod, disp, word);
     if(a->id == 9) // INTERPRETER
     { 
@@ -161,8 +161,6 @@ int immediateToRegMem(uint8_t* text, int curr, uint8_t word)
     }
     free(a);
     
-    if(interpret)
-        printRegisters(curr);
     printReadBytes(read, text, curr);
     printf("mov ");
 
@@ -173,10 +171,20 @@ int immediateToRegMem(uint8_t* text, int curr, uint8_t word)
     return read;
 }
 
-void immediateToRegister(uint8_t* text, int curr) // HERE TO CONTINUE
+void immediateToRegister(uint8_t* text, int curr)
 {
     uint8_t w = (text[curr] % 16) / 8;
     uint8_t reg = text[curr] % 8;
+
+
+    if (w == 0x00)
+        setRegister8(reg, text[curr + 1]);
+    else
+    {
+        uint16_t data = text[curr + 2] * 256 + text[curr + 1];
+        setRegister16(reg, data);
+    }
+    
 
     if(w == 0x00)
     {
@@ -190,13 +198,28 @@ void immediateToRegister(uint8_t* text, int curr) // HERE TO CONTINUE
     }
 }
 
-int memoryToFromAccu(uint8_t* text, int curr, uint8_t word, uint8_t dir)
+int memoryToFromAccu(uint8_t* text, int curr, uint8_t word, uint8_t dir) // I DONT KNOW REALLY??
 {
     int read;
+    read = 3;
+    /*
+    if (dir == 0x00)
+    {
+        if (word == 0x00)
+            //setRegister8(0x00, )
+            //printf("%s, %02x -> %02x\n", regByte[0], text[curr + 1], text[curr + 2]);
+        else
+            //printf("%s, %02x -> %02x\n", regWord[0], text[curr + 1], text[curr + 2]);
+    }
+    else
+    {
+        if (word == 0x00)
+            //printf("%02x -> %02x, %s\n", text[curr + 1], text[curr + 2], regByte[0]);
+        else
+            //printf("%02x -> %02x, %s\n", text[curr + 1], text[curr + 2], regWord[0]);
+    }*/
 
     printReadBytes(3, text, curr);
-    read = 3;
-
     printf("mov ");
     
     if(dir == 0x00)
@@ -217,7 +240,7 @@ int memoryToFromAccu(uint8_t* text, int curr, uint8_t word, uint8_t dir)
     return read;
 }
 
-int regMemToFromSeg(uint8_t* text, int curr, uint8_t dir)
+int regMemToFromSeg(uint8_t* text, int curr, uint8_t dir) // NOT TO DO ?? We'll see
 {
     uint8_t mod = text[curr+1] / 64; 
     uint8_t rm = text[curr+1] % 8;
@@ -274,25 +297,73 @@ int pushPopRegMem(uint8_t* text, int curr, int pop)
 
     if((mod == 0x00 && rm == 0x06) || mod == 0x02)
     {
-        printReadBytes(4, text, curr);
         disp = text[curr+3] * 256 + text[curr+2];
         read = 4;
         word = 0x01;
     }
     else if (mod == 0x01)
     {
-        printReadBytes(3, text, curr);
         disp = (int8_t) text[curr+2];
         read = 3;
         word = 0x01;
     }
     else
     {
-        printReadBytes(2, text, curr);
         read = 2;
         word = 0x00;
     }
-    
+   
+
+    struct pair* a = getRmAddress(rm, mod, disp, word);
+    if (pop == 0) // PUSH
+    {
+        if (word == 0x00)
+        {
+            setRegister16(0x04, *getRegister16(0x04) - 1);
+            if (a->id == 9)
+                mem[*getRegister16(0x04)] = mem[a->disp];
+            else
+                mem[*getRegister16(0x04)] = *getRegister8(a->id);
+        }
+        else
+        {
+            setRegister16(0x04, *getRegister16(0x04) - 2);
+            if (a->id == 9)
+            {
+                mem[*getRegister16(0x04)] = mem[a->disp];
+                mem[*getRegister16(0x04) + 1] = mem[a->disp + 1];
+            }
+            else
+                mem[*getRegister16(0x04)] = *getRegister16(a->id);
+        }
+    }
+    else
+    {
+        if (word == 0x00)
+        {
+            if (a->id == 9)
+                mem[a->disp] = mem[*getRegister16(0x04)];
+            else
+                setRegister8(a->id, mem[*getRegister16(0x04)]);
+
+            setRegister16(0x04, *getRegister16(0x04) + 1);
+        }
+        else
+        {
+            if (a->id == 9)
+            {
+                mem[a->disp] = mem[*getRegister16(0x04)];
+                mem[a->disp + 1] = mem[*getRegister16(0x04) + 1];
+            }
+            else
+                setRegister16(a->id, mem[*getRegister16(0x04)]); // CURSED DE FOU MDR ALED
+
+            setRegister16(0x04, *getRegister16(0x04) + 2);
+        }
+    }
+    free(a);
+
+    printReadBytes(read, text, curr);
     if(pop == 0)
         printf("push ");
     else

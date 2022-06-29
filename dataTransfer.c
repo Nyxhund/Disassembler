@@ -94,7 +94,7 @@ int RegMemtofromReg(uint8_t* text, int curr, uint8_t dir, uint8_t word)
         printRm(rm, mod, disp, word, 0x00);
     }
 
-    if (a->id == 9)
+    if (a->id == 9 && interpret)
         printMemoryChange(a->disp);
     free(a);
     printf("\n");
@@ -487,25 +487,45 @@ int leaLdsLes(uint8_t* text, int curr, int id)
 
     if((mod == 0x00 && rm == 0x06) || mod == 0x02)
     {
-        printReadBytes(4, text, curr);
         disp = text[curr+3] * 256 + text[curr+2];
         read = 4;
         word = 0x01;
     }
     else if (mod == 0x01)
     {
-        printReadBytes(3, text, curr);
         disp = (int8_t) text[curr+2];
         read = 3;
         word = 0x01;
     }
     else
     {
-        printReadBytes(2, text, curr);
         read = 2;
         word = 0x00;
     }
     
+    struct pair *a = getRmAddress(rm, mod, disp, word);
+    if (word == 0x00)
+    {
+        if (id == 0)
+            setRegister16(reg, *((uint16_t*)(mem + a->disp)));
+            //printf("lea ");
+        //else if (id == 1)
+            //printf("lds ");
+        //else
+            //printf("les ");
+    }
+    else
+    {
+        if (id == 0)
+            setRegister16(reg, *((uint16_t*)(mem + a->disp)));
+        //printf("lea ");
+        //else if (id == 1)
+            //printf("lds ");
+        //else
+            //printf("les ");s
+    }
+
+    printReadBytes(read, text, curr);
     if(id == 0)
         printf("lea ");
     else if(id == 1)
@@ -515,6 +535,10 @@ int leaLdsLes(uint8_t* text, int curr, int id)
 
     printf("%s, ", regWord[reg]);
     printRm(rm, mod, disp, word, 0x00);
+    
+    if (a->id == 9 && interpret)
+        printMemoryChange(a->disp);
+    free(a);
     printf("\n");
 
     return read;

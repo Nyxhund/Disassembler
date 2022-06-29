@@ -222,5 +222,5 @@ void setFlagsZAndS16(uint16_t val)
 
 void printMemoryChange(uint16_t addr)
 {
-    printf(" ;[%04x]%04x", addr, mem[addr]);
+    printf(" ;[%04x]%04x", addr, *((uint16_t*)(mem + addr)));
 }

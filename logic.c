@@ -225,7 +225,6 @@ int logicRegMemToEither(uint8_t* text, int curr, int id)
             }
         }
     }
-    free(a);
 
     printReadBytes(read, text, curr);
     if(id == 0)
@@ -242,21 +241,24 @@ int logicRegMemToEither(uint8_t* text, int curr, int id)
         printRm(rm, mod, disp, word, 0x00);
 
         if(word == 0x00)
-            printf(", %s\n", regByte[reg]);
+            printf(", %s", regByte[reg]);
         else
-            printf(", %s\n", regWord[reg]);
+            printf(", %s", regWord[reg]);
     }
     else
     {
         if(word == 0x00)
-            printf(", %s\n", regByte[reg]);
+            printf(", %s", regByte[reg]);
         else
-            printf(", %s\n", regWord[reg]);
+            printf(", %s", regWord[reg]);
 
         printRm(rm, mod, disp, word, 0x00);
-        printf("\n");
     }
+    if (a->id == 9)
+        printMemoryChange(a->disp);
+    printf("\n");
 
+    free(a);
     return read;
 }
 
@@ -275,7 +277,6 @@ int logicImmediateToRegMem(uint8_t* text, int curr)
 
     if((mod == 0x00 && rm == 0x06) || mod == 0x02)
     {
-        printReadBytes(toRead + 2, text, curr);
         disp = text[curr+3] * 256 + text[curr+2];
         read = toRead + 2;
 
@@ -286,7 +287,6 @@ int logicImmediateToRegMem(uint8_t* text, int curr)
     }
     else if (mod == 0x01)
     {
-        printReadBytes(toRead + 1, text, curr);
         disp = (int8_t) text[curr+2];
         read = toRead + 1;
 
@@ -297,7 +297,6 @@ int logicImmediateToRegMem(uint8_t* text, int curr)
     }
     else
     {
-        printReadBytes(toRead, text, curr);
         read = toRead;
 
         if(w == 0x01)
@@ -305,12 +304,36 @@ int logicImmediateToRegMem(uint8_t* text, int curr)
         else
             data = text[curr+2];
     }
-    
+
+    struct pair* a = getRmAddress(rm, mod, disp, w);
+    printReadBytes(read, text, curr);
     printf("test ");
 
     printRm(rm, mod, disp, w, 0x00);
 
-    printf(", %x\n", data);
+    printf(", %x", data);
+    if (a->id == 9)
+        printMemoryChange(a->disp);
+    printf("\n");
+
+    if (w == 0x00)
+    {
+        if (a->id == 9)
+            setFlagsZAndS8(*(mem + a->disp) & ((uint8_t)data));
+        else
+            setFlagsZAndS8(*getRegister8(a->id) & ((uint8_t)data));
+    }
+    else
+    {
+        if (a->id == 9)
+            setFlagsZAndS16(*((uint16_t*)(mem + a->disp)) & data);
+        else
+            setFlagsZAndS16(*getRegister16(a->id) & data);
+    }
+    
+    cpu->C = 0;
+    cpu->O = 0;
+    free(a);
     
     return read;
 }

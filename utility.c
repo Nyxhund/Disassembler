@@ -169,7 +169,7 @@ void printReadBytes(int read, uint8_t* text, int curr)
 
 void printRegisters(int curr)
 {
-    printf("%04x %04x %04x %04x %04x %04x %04x %04x ", cpu->registers[0], cpu->registers[3], cpu->registers[2], cpu->registers[1], cpu->registers[4], cpu->registers[5], cpu->registers[6], cpu->registers[7]);
+    printf("%04x %04x %04x %04x %04x %04x %04x %04x ", cpu->registers[0], cpu->registers[3], cpu->registers[1], cpu->registers[2], cpu->registers[4], cpu->registers[5], cpu->registers[6], cpu->registers[7]);
     
     if(cpu->O) //  OsZc
         printf("O");
@@ -187,7 +187,7 @@ void printRegisters(int curr)
         printf("-");
 
     if(cpu->C) //  OsZc
-        printf("O");
+        printf("C");
     else
         printf("-");
 
@@ -218,6 +218,66 @@ void setFlagsZAndS16(uint16_t val)
         cpu->S = 1;
     else
         cpu->S = 0;
+}
+
+void addOAC8(uint8_t dest, uint8_t src)
+{
+    if (dest >= 0x80 && src >= 0x80 && dest + src < 0x80)
+        cpu->O = 1;
+    else if (dest < 0x80 && src < 0x80 && dest + src >= 0x80)
+        cpu->O = 1;
+    else
+        cpu->O = 0;
+
+    if (src > 0xff - dest)
+        cpu->C = 1;
+    else
+        cpu->C = 0;
+}
+
+void addOAC16(uint16_t dest, uint16_t src)
+{
+    if (dest >= 0x8000 && src >= 0x8000 && dest + src < 0x8000)
+        cpu->O = 1;
+    else if (dest < 0x8000 && src < 0x8000 && dest + src >= 0x8000)
+        cpu->O = 1;
+    else
+        cpu->O = 0;
+
+    if (src > 0xffff - dest)
+        cpu->C = 1;
+    else
+        cpu->C = 0;
+}
+
+void cmpOAC8(uint8_t dest, uint8_t src)
+{
+    if (dest >= 0x80 && src < 0x80 && dest - src < 0x80)
+        cpu->O = 1;
+    else if (dest < 0x80 && src >= 0x80 && dest - src >= 0x80)
+        cpu->O = 1;
+    else
+        cpu->O = 0;
+
+    if (src > dest)
+        cpu->C = 1;
+    else
+        cpu->C = 0;
+}
+
+void cmpOAC16(uint16_t dest, uint16_t src)
+{
+    if (dest >= 0x8000 && src < 0x8000 && dest - src < 0x8000)
+        cpu->O = 1;
+    else if (dest < 0x8000 && src >= 0x8000 && dest - src >= 0x8000)
+        cpu->O = 1;
+    else
+        cpu->O = 0;
+
+    if (src > dest)
+        cpu->C = 1;
+    else
+        cpu->C = 0;
 }
 
 void printMemoryChange(uint16_t addr)

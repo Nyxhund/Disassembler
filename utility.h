@@ -41,4 +41,9 @@ void setFlagsZAndS16(uint16_t val);
 
 void printMemoryChange(uint16_t addr);
 
+void addOAC8(uint8_t dest, uint8_t src);
+void addOAC16(uint16_t dest, uint16_t src);
+void cmpOAC8(uint8_t dest, uint8_t src);
+void cmpOAC16(uint16_t dest, uint16_t src);
+
 #endif

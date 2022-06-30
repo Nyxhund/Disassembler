@@ -15,6 +15,7 @@ int controlDirect(uint8_t* text, int curr, int id)
 {
     uint16_t disp = text[curr+2] * 256 + text[curr+1];
     printReadBytes(3, text, curr);
+    int read;
 
     if (id == 0)
         printf("call ");
@@ -26,7 +27,21 @@ int controlDirect(uint8_t* text, int curr, int id)
         printf("ret ");
 
     printf("%04x\n", disp + curr + 0x03);
-    return 3;
+
+    if (id == 0)
+    {
+        setRegister16(0x04, *getRegister16(0x04) - 2);
+        *((uint16_t*)(mem + *getRegister16(0x04))) = (uint16_t)curr;
+        read = disp + 0x03;
+    }
+    else if (id == 1)
+        read = 3;
+    else if (id == 2)
+        read = 3;
+    else if (id == 3)
+        read = 3;
+
+    return read;
 }
 
 int jumpShort(uint8_t* text, int curr)

@@ -367,7 +367,7 @@ int pushPopRegMem(uint8_t* text, int curr, int pop)
                 mem[a->disp + 1] = mem[*getRegister16(0x04) + 1];
             }
             else
-                setRegister16(a->id, mem[*getRegister16(0x04)]); // CURSED DE FOU MDR ALED
+                setRegister16(a->id, *((uint16_t*)(mem + *getRegister16(0x04))));
 
             setRegister16(0x04, *getRegister16(0x04) + 2);
         }
@@ -384,6 +384,17 @@ int pushPopReg(uint8_t* text, int curr, int pop)
         printf("push %s\n", regWord[reg]);
     else 
         printf("pop %s\n", regWord[reg]);
+
+    if (pop == 0)
+    {
+        setRegister16(0x04, *getRegister16(0x04) - 2);
+        *((uint16_t*)(mem + *getRegister16(0x04))) = *getRegister16(reg);
+    }
+    else
+    {
+        setRegister16(reg, *((uint16_t*)(mem + *getRegister16(0x04))));
+        setRegister16(0x04, *getRegister16(0x04) + 2);
+    }
     return 1;
 }
 

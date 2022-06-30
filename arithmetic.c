@@ -335,7 +335,10 @@ int immediateAddRegMem(uint8_t* text, int curr)
         if (data >= 0x8000)
             printf(", -%04x", ~data + 1);
         else
-            printf(", %04x", data);
+            if(id == 0x05)
+                printf(", %x", data);
+            else
+                printf(", %04x", data);
     }
     else
         printf(", %04x", data);

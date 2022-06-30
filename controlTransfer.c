@@ -35,7 +35,7 @@ int controlDirect(uint8_t* text, int curr, int id)
         read = disp + 0x03;
     }
     else if (id == 1)
-        read = 3;
+        read = disp + 0x03;
     else if (id == 2)
         read = 3;
     else if (id == 3)

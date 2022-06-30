@@ -69,7 +69,7 @@ int RegMemtofromReg(uint8_t* text, int curr, uint8_t dir, uint8_t word)
             if(word == 0x00)
                 mem[a->disp] = *getRegister8(reg);
             else
-                mem[a->disp] = *getRegister16(reg);
+                *((uint16_t*)(mem + a->disp)) = *getRegister16(reg);
         }
         else
         {
@@ -87,7 +87,7 @@ int RegMemtofromReg(uint8_t* text, int curr, uint8_t dir, uint8_t word)
             if(word == 0x00)
                 setRegister8(reg, mem[a->disp]);
             else
-                setRegister16(reg, mem[a->disp]);
+                setRegister16(reg, *((uint16_t*)(mem + a->disp)));
         }
         else
         {

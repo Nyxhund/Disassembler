@@ -94,61 +94,61 @@ void printRm(uint8_t rm, uint8_t mod, uint16_t disp, uint8_t word, uint8_t seg)
 {
     if(mod == 0x00 && rm == 0x06)
     {
-        printf("[%04x]", disp); // Check if negative? EA shouldn't be 0
+        fprintf(stderr, "[%04x]", disp); // Check if negative? EA shouldn't be 0
     }
     else if(mod == 0x03)
     {
         if(seg == 0x01)
-            printf("%s", regSegment[rm]);
+            fprintf(stderr, "%s", regSegment[rm]);
         else if(word == 0x00)
-            printf("%s", regByte[rm]);
+            fprintf(stderr, "%s", regByte[rm]);
         else if(word == 0x01)
-            printf("%s", regWord[rm]);
+            fprintf(stderr, "%s", regWord[rm]);
     }
     else
     {
         switch(rm)
         {
             case 0x00:
-                printf("[bx+si");
+                fprintf(stderr, "[bx+si");
                 break;
             case 0x01:
-                printf("[bx+di");
+                fprintf(stderr, "[bx+di");
                 break;
             case 0x02:
-                printf("[bp+si");
+                fprintf(stderr, "[bp+si");
                 break;
             case 0x03:
-                printf("[bp+di");
+                fprintf(stderr, "[bp+di");
                 break;
             case 0x04:
-                printf("[si");
+                fprintf(stderr, "[si");
                 break;
             case 0x05:
-                printf("[di");
+                fprintf(stderr, "[di");
                 break;
             case 0x06:
-                printf("[bp");
+                fprintf(stderr, "[bp");
                 break;
             case 0x07:
-                printf("[bx");
+                fprintf(stderr, "[bx");
                 break;
         }
 
         if(mod == 0x00)
         {
-            printf("]");
+            fprintf(stderr, "]");
         }
         else
         {
             if(disp >= 0x8000)
             {
                 disp = ~disp + 1; // 2's complement
-                printf("-%x]", disp);
+                fprintf(stderr, "-%x]", disp);
             }
             else
             {
-                printf("+%x]", disp);
+                fprintf(stderr, "+%x]", disp);
             }
         }
     }
@@ -159,39 +159,39 @@ void printReadBytes(int read, uint8_t* text, int curr)
 {
     for(int i = 0; i < read; i++)
     {
-        printf("%02x", text[i + curr]);
+        fprintf(stderr, "%02x", text[i + curr]);
     }
     for(int i = read; i < 7; i++)
     {
-        printf("  ");
+        fprintf(stderr, "  ");
     }
 }
 
 void printRegisters(int curr)
 {
-    printf("%04x %04x %04x %04x %04x %04x %04x %04x ", cpu->registers[0], cpu->registers[3], cpu->registers[1], cpu->registers[2], cpu->registers[4], cpu->registers[5], cpu->registers[6], cpu->registers[7]);
+    fprintf(stderr, "%04x %04x %04x %04x %04x %04x %04x %04x ", cpu->registers[0], cpu->registers[3], cpu->registers[1], cpu->registers[2], cpu->registers[4], cpu->registers[5], cpu->registers[6], cpu->registers[7]);
     
     if(cpu->O) //  OsZc
-        printf("O");
+        fprintf(stderr, "O");
     else
-        printf("-");
+        fprintf(stderr, "-");
     
     if(cpu->S) //  OsZc
-        printf("S");
+        fprintf(stderr, "S");
     else
-        printf("-");
+        fprintf(stderr, "-");
 
     if(cpu->Z) //  OsZc
-        printf("Z");
+        fprintf(stderr, "Z");
     else
-        printf("-");
+        fprintf(stderr, "-");
 
     if(cpu->C) //  OsZc
-        printf("C");
+        fprintf(stderr, "C");
     else
-        printf("-");
+        fprintf(stderr, "-");
 
-    printf(" %04x:", curr);
+    fprintf(stderr, " %04x:", curr);
 }
 
 void setFlagsZAndS8(uint8_t val)
@@ -235,6 +235,16 @@ void addOAC8(uint8_t dest, uint8_t src)
         cpu->C = 0;
 }
 
+void addO8(uint8_t dest, uint8_t src)
+{
+    if (dest >= 0x80 && src >= 0x80 && dest + src < 0x80)
+        cpu->O = 1;
+    else if (dest < 0x80 && src < 0x80 && dest + src >= 0x80)
+        cpu->O = 1;
+    else
+        cpu->O = 0;
+}
+
 void addOAC16(uint16_t dest, uint16_t src)
 {
     if (dest >= 0x8000 && src >= 0x8000 && dest + src < 0x8000)
@@ -248,6 +258,16 @@ void addOAC16(uint16_t dest, uint16_t src)
         cpu->C = 1;
     else
         cpu->C = 0;
+}
+
+void addO16(uint16_t dest, uint16_t src)
+{
+    if (dest >= 0x8000 && src >= 0x8000 && dest + src < 0x8000)
+        cpu->O = 1;
+    else if (dest < 0x8000 && src < 0x8000 && dest + src >= 0x8000)
+        cpu->O = 1;
+    else
+        cpu->O = 0;
 }
 
 void cmpOAC8(uint8_t dest, uint8_t src)
@@ -265,6 +285,16 @@ void cmpOAC8(uint8_t dest, uint8_t src)
         cpu->C = 0;
 }
 
+void cmpO8(uint8_t dest, uint8_t src)
+{
+    if (dest >= 0x80 && src < 0x80 && dest - src < 0x80)
+        cpu->O = 1;
+    else if (dest < 0x80 && src >= 0x80 && dest - src >= 0x80)
+        cpu->O = 1;
+    else
+        cpu->O = 0;
+}
+
 void cmpOAC16(uint16_t dest, uint16_t src)
 {
     if (dest >= 0x8000 && src < 0x8000 && dest - src < 0x8000)
@@ -280,7 +310,17 @@ void cmpOAC16(uint16_t dest, uint16_t src)
         cpu->C = 0;
 }
 
+void cmpO16(uint16_t dest, uint16_t src)
+{
+    if (dest >= 0x8000 && src < 0x8000 && dest - src < 0x8000)
+        cpu->O = 1;
+    else if (dest < 0x8000 && src >= 0x8000 && dest - src >= 0x8000)
+        cpu->O = 1;
+    else
+        cpu->O = 0;
+}
+
 void printMemoryChange(uint16_t addr)
 {
-    printf(" ;[%04x]%04x", addr, *((uint16_t*)(mem + addr)));
+    fprintf(stderr, " ;[%04x]%04x", addr, *((uint16_t*)(mem + addr)));
 }

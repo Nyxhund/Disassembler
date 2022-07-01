@@ -40,26 +40,26 @@ int shifts(uint8_t* text, int curr) // D (0->3)
     }
 
     if(id == 0x00)
-        printf("rol ");
+        fprintf(stderr, "rol ");
     else if (id == 0x01)
-        printf("ror ");
+        fprintf(stderr, "ror ");
     else if (id == 0x02)
-        printf("rcl ");
+        fprintf(stderr, "rcl ");
     else if (id == 0x03)
-        printf("rcr ");
+        fprintf(stderr, "rcr ");
     else if (id == 0x04)
-        printf("shl ");
+        fprintf(stderr, "shl ");
     else if (id == 0x05)
-        printf("shr ");
+        fprintf(stderr, "shr ");
     else if (id == 0x07)
-        printf("sar ");
+        fprintf(stderr, "sar ");
 
     printRm(rm, mod, disp, w, 0x00);
     
     if(v == 0x00)
-        printf(", 1\n");
+        fprintf(stderr, ", 1\n");
     else
-        printf(", cl\n");
+        fprintf(stderr, ", cl\n");
 
     return read;
 }
@@ -90,34 +90,66 @@ int logicRegMemToEither(uint8_t* text, int curr, int id)
     }
 
     struct pair* a = getRmAddress(rm, mod, disp, word);
+    printReadBytes(read, text, curr);
+    if (id == 0)
+        fprintf(stderr, "and ");
+    else if (id == 1)
+        fprintf(stderr, "or ");
+    else if (id == 2)
+        fprintf(stderr, "xor ");
+    else
+        fprintf(stderr, "test ");
+
+    if (dir == 0x00)
+    {
+        printRm(rm, mod, disp, word, 0x00);
+
+        if (word == 0x00)
+            fprintf(stderr, ", %s", regByte[reg]);
+        else
+            fprintf(stderr, ", %s", regWord[reg]);
+    }
+    else
+    {
+        if (word == 0x00)
+            fprintf(stderr, ", %s", regByte[reg]);
+        else
+            fprintf(stderr, ", %s", regWord[reg]);
+
+        printRm(rm, mod, disp, word, 0x00);
+    }
+    if (a->id == 9 && interpret)
+        printMemoryChange(a->disp);
+    fprintf(stderr, "\n");
+
     if (dir == 0x00)
     {
         if (word == 0x00)
         {
-            if (a->id == 9)
+            if (a->id == 9 && interpret)
             {
                 if (id == 0)
                     mem[*getRegister16(0x04)] &= *getRegister8(reg);
-                    //printf("and ");
+                    //fprintf(stderr, "and ");
                 else if (id == 1)
                     mem[*getRegister16(0x04)] |= *getRegister8(reg);
-                    //printf("or ");
+                    //fprintf(stderr, "or ");
                 else if (id == 2)
                     mem[*getRegister16(0x04)] ^= *getRegister8(reg);
-                    //printf("xor ");
+                    //fprintf(stderr, "xor ");
                 //else
 
-                    //printf("test ");
+                    //fprintf(stderr, "test ");
                 setFlagsZAndS8(mem[*getRegister16(0x04)]);
             }
             else
             {
                 if (id == 0)
                     *getRegister8(a->id) &= *getRegister8(reg);
-                //printf("and ");
+                //fprintf(stderr, "and ");
                 else if (id == 1)
                     *getRegister8(a->id) |= *getRegister8(reg);
-                //printf("or ");
+                //fprintf(stderr, "or ");
                 else if (id == 2)
                     *getRegister8(a->id) ^= *getRegister8(reg);
 
@@ -126,20 +158,20 @@ int logicRegMemToEither(uint8_t* text, int curr, int id)
         }
         else
         {
-            if (a->id == 9)
+            if (a->id == 9 && interpret)
             {
                 if (id == 0)
                     *((uint16_t*) (&mem[*getRegister16(0x04)])) &= *getRegister16(reg);
-                //printf("and ");
+                //fprintf(stderr, "and ");
                 else if (id == 1)
                     *((uint16_t*)(&mem[*getRegister16(0x04)])) |= *getRegister16(reg);
-                //printf("or ");
+                //fprintf(stderr, "or ");
                 else if (id == 2)
                     *((uint16_t*)(&mem[*getRegister16(0x04)])) ^= *getRegister16(reg);
-                //printf("xor ");
+                //fprintf(stderr, "xor ");
             //else
 
-                //printf("test ");
+                //fprintf(stderr, "test ");
 
                 setFlagsZAndS16((uint16_t)(mem[*getRegister16(0x04)]));
             }
@@ -147,10 +179,10 @@ int logicRegMemToEither(uint8_t* text, int curr, int id)
             {
                 if (id == 0)
                     *getRegister16(a->id) &= *getRegister16(reg);
-                //printf("and ");
+                //fprintf(stderr, "and ");
                 else if (id == 1)
                     *getRegister16(a->id) |= *getRegister16(reg);
-                //printf("or ");
+                //fprintf(stderr, "or ");
                 else if (id == 2)
                     *getRegister16(a->id) ^= *getRegister16(reg);
 
@@ -162,30 +194,30 @@ int logicRegMemToEither(uint8_t* text, int curr, int id)
     {
         if (word == 0x00)
         {
-            if (a->id == 9)
+            if (a->id == 9 && interpret)
             {
                 if (id == 0)
                     *getRegister8(reg) &= mem[*getRegister16(0x04)];
-                //printf("and ");
+                //fprintf(stderr, "and ");
                 else if (id == 1)
                     *getRegister8(reg) |= mem[*getRegister16(0x04)];
-                //printf("or ");
+                //fprintf(stderr, "or ");
                 else if (id == 2)
                     *getRegister8(reg) ^= mem[*getRegister16(0x04)];
-                //printf("xor ");
+                //fprintf(stderr, "xor ");
             //else
 
-                //printf("test ");
+                //fprintf(stderr, "test ");
                 setFlagsZAndS8(*getRegister8(reg));
             }
             else
             {
                 if (id == 0)
                     *getRegister8(reg) &= *getRegister8(a->id);
-                //printf("and ");
+                //fprintf(stderr, "and ");
                 else if (id == 1)
                     *getRegister8(reg) |= *getRegister8(a->id);
-                //printf("or ");
+                //fprintf(stderr, "or ");
                 else if (id == 2)
                     *getRegister8(reg) ^= *getRegister8(a->id);
 
@@ -194,30 +226,30 @@ int logicRegMemToEither(uint8_t* text, int curr, int id)
         }
         else
         {
-            if (a->id == 9)
+            if (a->id == 9 && interpret)
             {
                 if (id == 0)
                     *getRegister16(reg) &= (uint16_t) (mem[*getRegister16(0x04)]);
-                //printf("and ");
+                //fprintf(stderr, "and ");
                 else if (id == 1)
                     *getRegister16(reg) |= (uint16_t)(mem[*getRegister16(0x04)]);
-                //printf("or ");
+                //fprintf(stderr, "or ");
                 else if (id == 2)
                     *getRegister16(reg) ^= (uint16_t)(mem[*getRegister16(0x04)]);
-                //printf("xor ");
+                //fprintf(stderr, "xor ");
             //else
 
-                //printf("test ");
+                //fprintf(stderr, "test ");
                 setFlagsZAndS16(*getRegister16(reg));
             }
             else
             {
                 if (id == 0)
                     *getRegister16(reg) &= *getRegister16(a->id);
-                //printf("and ");
+                //fprintf(stderr, "and ");
                 else if (id == 1)
                     *getRegister16(reg) |= *getRegister16(a->id);
-                //printf("or ");
+                //fprintf(stderr, "or ");
                 else if (id == 2)
                     *getRegister16(reg) ^= *getRegister16(a->id);
 
@@ -225,38 +257,6 @@ int logicRegMemToEither(uint8_t* text, int curr, int id)
             }
         }
     }
-
-    printReadBytes(read, text, curr);
-    if(id == 0)
-        printf("and ");
-    else if (id == 1)
-        printf("or ");
-    else if (id == 2)
-        printf("xor ");
-    else
-        printf("test ");
-
-    if(dir == 0x00)
-    {
-        printRm(rm, mod, disp, word, 0x00);
-
-        if(word == 0x00)
-            printf(", %s", regByte[reg]);
-        else
-            printf(", %s", regWord[reg]);
-    }
-    else
-    {
-        if(word == 0x00)
-            printf(", %s", regByte[reg]);
-        else
-            printf(", %s", regWord[reg]);
-
-        printRm(rm, mod, disp, word, 0x00);
-    }
-    if (a->id == 9)
-        printMemoryChange(a->disp);
-    printf("\n");
 
     free(a);
     return read;
@@ -307,25 +307,25 @@ int logicImmediateToRegMem(uint8_t* text, int curr)
 
     struct pair* a = getRmAddress(rm, mod, disp, w);
     printReadBytes(read, text, curr);
-    printf("test ");
+    fprintf(stderr, "test ");
 
     printRm(rm, mod, disp, w, 0x00);
 
-    printf(", %x", data);
-    if (a->id == 9)
+    fprintf(stderr, ", %x", data);
+    if (a->id == 9 && interpret)
         printMemoryChange(a->disp);
-    printf("\n");
+    fprintf(stderr, "\n");
 
     if (w == 0x00)
     {
-        if (a->id == 9)
+        if (a->id == 9 && interpret)
             setFlagsZAndS8(*(mem + a->disp) & ((uint8_t)data));
         else
             setFlagsZAndS8(*getRegister8(a->id) & ((uint8_t)data));
     }
     else
     {
-        if (a->id == 9)
+        if (a->id == 9 && interpret)
             setFlagsZAndS16(*((uint16_t*)(mem + a->disp)) & data);
         else
             setFlagsZAndS16(*getRegister16(a->id) & data);
@@ -346,22 +346,22 @@ int stringManipulation(uint8_t* text, int curr, int id)
     switch (id)
     {
         case 0:
-            printf("rep\n");
+            fprintf(stderr, "rep\n");
             break;
         case 1:
-            printf("movs\n");
+            fprintf(stderr, "movs\n");
             break;
         case 2:
-            printf("cmps\n");
+            fprintf(stderr, "cmps\n");
             break;
         case 3:
-            printf("scas\n");
+            fprintf(stderr, "scas\n");
             break;
         case 4:
-            printf("lods\n");
+            fprintf(stderr, "lods\n");
             break;
         case 5:
-            printf("stos\n");
+            fprintf(stderr, "stos\n");
             break;
     }
     return 1;

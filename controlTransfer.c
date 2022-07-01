@@ -9,6 +9,7 @@
 #include "a.out.h"
 #include "stdio.h"
 #include "utility.h"
+#include "syscall.h"
 
 
 int controlDirect(uint8_t* text, int curr, int id)
@@ -18,15 +19,15 @@ int controlDirect(uint8_t* text, int curr, int id)
     int read;
 
     if (id == 0)
-        printf("call ");
+        fprintf(stderr, "call ");
     else if (id == 1)
-        printf("jmp ");
+        fprintf(stderr, "jmp ");
     else if (id == 2)
-        printf("jmp short ");
+        fprintf(stderr, "jmp short ");
     else if (id == 3)
-        printf("ret ");
+        fprintf(stderr, "ret ");
 
-    printf("%04x\n", disp + curr + 0x03);
+    fprintf(stderr, "%04x\n", (uint16_t) (disp + curr + 0x03));
 
     if (id == 0)
     {
@@ -49,61 +50,64 @@ int jumpShort(uint8_t* text, int curr)
     int8_t disp = text[curr+1];
     printReadBytes(2, text, curr);
 
-    printf("jmp short %04x\n", disp + curr + 2);
+    fprintf(stderr, "jmp short %04x\n", disp + curr + 2);
     return 2;
 }
 
 int controlSimpleCommands(uint8_t* text, int curr, int id)
 {
     printReadBytes(1, text, curr);
+    int read = 1;
 
     switch (id)
     {
         case 0:
-            printf("ret\n");
+            fprintf(stderr, "ret\n");
+            read = *((uint16_t*)(mem + *getRegister16(0x04))) + 0x03 - curr;
+            setRegister16(0x04, *getRegister16(0x04) + 2);
             break;
         case 1:
-            printf("int\n");
+            fprintf(stderr, "int\n");
             break;
         case 2:
-            printf("into\n");
+            fprintf(stderr, "into\n");
             break;
         case 3:
-            printf("iret\n");
+            fprintf(stderr, "iret\n");
             break;
         case 4:
-            printf("clc\n");
+            fprintf(stderr, "clc\n");
             break;
         case 5:
-            printf("cmc\n");
+            fprintf(stderr, "cmc\n");
             break;
         case 6:
-            printf("stc\n");
+            fprintf(stderr, "stc\n");
             break;
         case 7:
-            printf("cld\n");
+            fprintf(stderr, "cld\n");
             break;
         case 8:
-            printf("std\n");
+            fprintf(stderr, "std\n");
             break;
         case 9:
-            printf("cli\n");
+            fprintf(stderr, "cli\n");
             break;
         case 10:
-            printf("sti\n");
+            fprintf(stderr, "sti\n");
             break;
         case 11:
-            printf("hlt\n");
+            fprintf(stderr, "hlt\n");
             break;
         case 12:
-            printf("wait\n");
+            fprintf(stderr, "wait\n");
             break;
         case 13:
-            printf("lock\n");
+            fprintf(stderr, "lock\n");
             break;
     }
 
-    return 1;
+    return read;
 }
 
 int conditionalJump(uint8_t* text, int curr)
@@ -112,60 +116,89 @@ int conditionalJump(uint8_t* text, int curr)
     uint16_t disp = text[curr+1];
     printReadBytes(2, text, curr);
 
+    int read = 2;
     switch (id)
     {
         case 0x00:
-            printf("jo ");
+            fprintf(stderr, "jo ");
+            if (cpu->O)
+                read = disp + 0x02;
             break;
         case 0x01:
-            printf("jno ");
+            fprintf(stderr, "jno ");
+            if (!cpu->O)
+                read = disp + 0x02;
             break;
         case 0x02:
-            printf("jb ");
+            fprintf(stderr, "jb ");
+            if (cpu->C)
+                read = disp + 0x02;
             break;
         case 0x03:
-            printf("jnb ");
+            fprintf(stderr, "jnb ");
+            if (!cpu->C)
+                read = disp + 0x02;
             break;
         case 0x04:
-            printf("je ");
+            fprintf(stderr, "je ");
+            if (cpu->Z)
+                read = disp + 0x02;
             break;
         case 0x05:
-            printf("jne ");
+            fprintf(stderr, "jne ");
+            if (!cpu->Z)
+                read = disp + 0x02;
             break;
         case 0x06:
-            printf("jbe ");
+            fprintf(stderr, "jbe ");
+            if (cpu->C || cpu->Z)
+                read = disp + 0x02;
             break;
         case 0x07:
-            printf("jnbe ");
+            fprintf(stderr, "jnbe ");
+            if (!cpu->C && !cpu->Z)
+                read = disp + 0x02;
             break;
         case 0x08:
-            printf("js ");
+            fprintf(stderr, "js ");
+            if (cpu->S)
+                read = disp + 0x02;
             break;
         case 0x09:
-            printf("jns ");
+            fprintf(stderr, "jns ");
+            if (!cpu->S)
+                read = disp + 0x02;
             break;
         case 0x0a:
-            printf("jp ");
+            fprintf(stderr, "jp ");
             break;
         case 0x0b:
-            printf("jnp ");
+            fprintf(stderr, "jnp ");
             break;
         case 0x0c:
-            printf("jl ");
+            fprintf(stderr, "jl ");
+            if (cpu->S != cpu->O)
+                read = disp + 0x02;
             break;
         case 0x0d:
-            printf("jnl ");
+            fprintf(stderr, "jnl ");
+            if (cpu->S == cpu->O)
+                read = disp + 0x02;
             break;
         case 0x0e:
-            printf("jle ");
+            fprintf(stderr, "jle ");
+            if ((cpu->S != cpu->O) || cpu->Z)
+                read = disp + 0x02;
             break;
         case 0x0f:
-            printf("jnbe ");
+            fprintf(stderr, "jnbe ");
+            if (!cpu->C && !cpu->Z)
+                read = disp + 0x02;
             break;
     }
 
-    printf("%04x\n", 0x02 + disp + curr);
-    return 2;
+    fprintf(stderr, "%04x\n", 0x02 + disp + curr);
+    return read;
 }
 
 int conditionalLoop(uint8_t* text, int curr)
@@ -177,20 +210,20 @@ int conditionalLoop(uint8_t* text, int curr)
     switch (id)
     {
         case 0x00:
-            printf("loopnz ");
+            fprintf(stderr, "loopnz ");
             break;
         case 0x01:
-            printf("loopz ");
+            fprintf(stderr, "loopz ");
             break;
         case 0x02:
-            printf("loop ");
+            fprintf(stderr, "loop ");
             break;
         case 0x03:
-            printf("jcxz ");
+            fprintf(stderr, "jcxz ");
             break;
     }
 
-    printf("%04x\n", 0x02 + disp + curr);
+    fprintf(stderr, "%04x\n", 0x02 + disp + curr);
     return 2;
 }
 
@@ -198,7 +231,10 @@ int intTypeSpec(uint8_t* text, int curr)
 {
     uint8_t type = text[curr+1];
     printReadBytes(2, text, curr);
-    printf("int %x\n", type);
+    fprintf(stderr, "int %x\n", type);
+
+    syscall();
+
     return 2;
 }
 
@@ -227,7 +263,7 @@ int escape(uint8_t* text, int curr)
         read = 2;
     }
 
-    printf("esc ");
+    fprintf(stderr, "esc ");
     printRm(rm, mod, disp, 0x01, 0x00);
     return read;
 }

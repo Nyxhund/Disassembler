@@ -46,4 +46,9 @@ void addOAC16(uint16_t dest, uint16_t src);
 void cmpOAC8(uint8_t dest, uint8_t src);
 void cmpOAC16(uint16_t dest, uint16_t src);
 
+void addO8(uint8_t dest, uint8_t src);
+void addO16(uint16_t dest, uint16_t src);
+void cmpO8(uint8_t dest, uint8_t src);
+void cmpO16(uint16_t dest, uint16_t src);
+
 #endif

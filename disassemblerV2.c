@@ -27,7 +27,7 @@ int printInfo(uint8_t* text, int curr, int max)
             else
             {
                 printReadBytes(1, text, curr);
-                printf("(undefined)\n");
+                fprintf(stderr, "(undefined)\n");
                 read = 1;
             }
             break;
@@ -788,7 +788,7 @@ int printInfo(uint8_t* text, int curr, int max)
 
         default:
             printReadBytes(1, text, curr);
-            printf("(undefined)\n");
+            fprintf(stderr, "(undefined)\n");
             read = 1;
             break;
     }
@@ -803,7 +803,7 @@ int main(int argc, char** argv)
 {
     if(argc != 3)
     {
-        printf("Wrong input: please enter a path to a binary executable and a mode to execute.");
+        fprintf(stderr, "Wrong input: please enter a path to a binary executable and a mode to execute.");
         return 1;
     }
     
@@ -813,7 +813,7 @@ int main(int argc, char** argv)
         interpret = 1;
     else
     {
-        printf("Wrong input: please enter a correct mode of execution.");
+        fprintf(stderr, "Wrong input: please enter a correct mode of execution.");
         return 1;
     }
 
@@ -846,15 +846,16 @@ int main(int argc, char** argv)
     mem[0xffdf] = 0xff;
 
     if(interpret)
-        printf(" AX   BX   CX   DX   SP   BP   SI   DI  FLAGS IP\n");
+        fprintf(stderr, " AX   BX   CX   DX   SP   BP   SI   DI  FLAGS IP\n");
     
     while(curr < header->a_text)
     {
         if (!interpret)
-            printf("%04x: ", curr);
+            fprintf(stderr, "%04x: ", curr);
         else
             printRegisters(curr);
         curr += printInfo(text, curr, header->a_text);
+        curr %= 0x10000;
     }
 
     free(header);

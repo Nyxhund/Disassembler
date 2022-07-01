@@ -122,138 +122,141 @@ int logicRegMemToEither(uint8_t* text, int curr, int id)
         printMemoryChange(a->disp);
     fprintf(stderr, "\n");
 
-    if (dir == 0x00)
+    if (interpret)
     {
-        if (word == 0x00)
+        if (dir == 0x00)
         {
-            if (a->id == 9 && interpret)
+            if (word == 0x00)
             {
-                if (id == 0)
-                    mem[*getRegister16(0x04)] &= *getRegister8(reg);
+                if (a->id == 9 && interpret)
+                {
+                    if (id == 0)
+                        mem[*getRegister16(0x04)] &= *getRegister8(reg);
                     //fprintf(stderr, "and ");
-                else if (id == 1)
-                    mem[*getRegister16(0x04)] |= *getRegister8(reg);
+                    else if (id == 1)
+                        mem[*getRegister16(0x04)] |= *getRegister8(reg);
                     //fprintf(stderr, "or ");
-                else if (id == 2)
-                    mem[*getRegister16(0x04)] ^= *getRegister8(reg);
+                    else if (id == 2)
+                        mem[*getRegister16(0x04)] ^= *getRegister8(reg);
                     //fprintf(stderr, "xor ");
                 //else
 
                     //fprintf(stderr, "test ");
-                setFlagsZAndS8(mem[*getRegister16(0x04)]);
+                    setFlagsZAndS8(mem[*getRegister16(0x04)]);
+                }
+                else
+                {
+                    if (id == 0)
+                        *getRegister8(a->id) &= *getRegister8(reg);
+                    //fprintf(stderr, "and ");
+                    else if (id == 1)
+                        *getRegister8(a->id) |= *getRegister8(reg);
+                    //fprintf(stderr, "or ");
+                    else if (id == 2)
+                        *getRegister8(a->id) ^= *getRegister8(reg);
+
+                    setFlagsZAndS8(*getRegister8(a->id));
+                }
             }
             else
             {
-                if (id == 0)
-                    *getRegister8(a->id) &= *getRegister8(reg);
-                //fprintf(stderr, "and ");
-                else if (id == 1)
-                    *getRegister8(a->id) |= *getRegister8(reg);
-                //fprintf(stderr, "or ");
-                else if (id == 2)
-                    *getRegister8(a->id) ^= *getRegister8(reg);
+                if (a->id == 9 && interpret)
+                {
+                    if (id == 0)
+                        *((uint16_t*)(&mem[*getRegister16(0x04)])) &= *getRegister16(reg);
+                    //fprintf(stderr, "and ");
+                    else if (id == 1)
+                        *((uint16_t*)(&mem[*getRegister16(0x04)])) |= *getRegister16(reg);
+                    //fprintf(stderr, "or ");
+                    else if (id == 2)
+                        *((uint16_t*)(&mem[*getRegister16(0x04)])) ^= *getRegister16(reg);
+                    //fprintf(stderr, "xor ");
+                //else
 
-                setFlagsZAndS8(*getRegister8(a->id));
+                    //fprintf(stderr, "test ");
+
+                    setFlagsZAndS16((uint16_t)(mem[*getRegister16(0x04)]));
+                }
+                else
+                {
+                    if (id == 0)
+                        *getRegister16(a->id) &= *getRegister16(reg);
+                    //fprintf(stderr, "and ");
+                    else if (id == 1)
+                        *getRegister16(a->id) |= *getRegister16(reg);
+                    //fprintf(stderr, "or ");
+                    else if (id == 2)
+                        *getRegister16(a->id) ^= *getRegister16(reg);
+
+                    setFlagsZAndS16(*getRegister16(a->id));
+                }
             }
         }
         else
         {
-            if (a->id == 9 && interpret)
+            if (word == 0x00)
             {
-                if (id == 0)
-                    *((uint16_t*) (&mem[*getRegister16(0x04)])) &= *getRegister16(reg);
-                //fprintf(stderr, "and ");
-                else if (id == 1)
-                    *((uint16_t*)(&mem[*getRegister16(0x04)])) |= *getRegister16(reg);
-                //fprintf(stderr, "or ");
-                else if (id == 2)
-                    *((uint16_t*)(&mem[*getRegister16(0x04)])) ^= *getRegister16(reg);
-                //fprintf(stderr, "xor ");
-            //else
+                if (a->id == 9 && interpret)
+                {
+                    if (id == 0)
+                        *getRegister8(reg) &= mem[*getRegister16(0x04)];
+                    //fprintf(stderr, "and ");
+                    else if (id == 1)
+                        *getRegister8(reg) |= mem[*getRegister16(0x04)];
+                    //fprintf(stderr, "or ");
+                    else if (id == 2)
+                        *getRegister8(reg) ^= mem[*getRegister16(0x04)];
+                    //fprintf(stderr, "xor ");
+                //else
 
-                //fprintf(stderr, "test ");
+                    //fprintf(stderr, "test ");
+                    setFlagsZAndS8(*getRegister8(reg));
+                }
+                else
+                {
+                    if (id == 0)
+                        *getRegister8(reg) &= *getRegister8(a->id);
+                    //fprintf(stderr, "and ");
+                    else if (id == 1)
+                        *getRegister8(reg) |= *getRegister8(a->id);
+                    //fprintf(stderr, "or ");
+                    else if (id == 2)
+                        *getRegister8(reg) ^= *getRegister8(a->id);
 
-                setFlagsZAndS16((uint16_t)(mem[*getRegister16(0x04)]));
+                    setFlagsZAndS8(*getRegister8(reg));
+                }
             }
             else
             {
-                if (id == 0)
-                    *getRegister16(a->id) &= *getRegister16(reg);
-                //fprintf(stderr, "and ");
-                else if (id == 1)
-                    *getRegister16(a->id) |= *getRegister16(reg);
-                //fprintf(stderr, "or ");
-                else if (id == 2)
-                    *getRegister16(a->id) ^= *getRegister16(reg);
+                if (a->id == 9 && interpret)
+                {
+                    if (id == 0)
+                        *getRegister16(reg) &= (uint16_t)(mem[*getRegister16(0x04)]);
+                    //fprintf(stderr, "and ");
+                    else if (id == 1)
+                        *getRegister16(reg) |= (uint16_t)(mem[*getRegister16(0x04)]);
+                    //fprintf(stderr, "or ");
+                    else if (id == 2)
+                        *getRegister16(reg) ^= (uint16_t)(mem[*getRegister16(0x04)]);
+                    //fprintf(stderr, "xor ");
+                //else
 
-                setFlagsZAndS16(*getRegister16(a->id));
-            }
-        }
-    }
-    else
-    {
-        if (word == 0x00)
-        {
-            if (a->id == 9 && interpret)
-            {
-                if (id == 0)
-                    *getRegister8(reg) &= mem[*getRegister16(0x04)];
-                //fprintf(stderr, "and ");
-                else if (id == 1)
-                    *getRegister8(reg) |= mem[*getRegister16(0x04)];
-                //fprintf(stderr, "or ");
-                else if (id == 2)
-                    *getRegister8(reg) ^= mem[*getRegister16(0x04)];
-                //fprintf(stderr, "xor ");
-            //else
+                    //fprintf(stderr, "test ");
+                    setFlagsZAndS16(*getRegister16(reg));
+                }
+                else
+                {
+                    if (id == 0)
+                        *getRegister16(reg) &= *getRegister16(a->id);
+                    //fprintf(stderr, "and ");
+                    else if (id == 1)
+                        *getRegister16(reg) |= *getRegister16(a->id);
+                    //fprintf(stderr, "or ");
+                    else if (id == 2)
+                        *getRegister16(reg) ^= *getRegister16(a->id);
 
-                //fprintf(stderr, "test ");
-                setFlagsZAndS8(*getRegister8(reg));
-            }
-            else
-            {
-                if (id == 0)
-                    *getRegister8(reg) &= *getRegister8(a->id);
-                //fprintf(stderr, "and ");
-                else if (id == 1)
-                    *getRegister8(reg) |= *getRegister8(a->id);
-                //fprintf(stderr, "or ");
-                else if (id == 2)
-                    *getRegister8(reg) ^= *getRegister8(a->id);
-
-                setFlagsZAndS8(*getRegister8(reg));
-            }
-        }
-        else
-        {
-            if (a->id == 9 && interpret)
-            {
-                if (id == 0)
-                    *getRegister16(reg) &= (uint16_t) (mem[*getRegister16(0x04)]);
-                //fprintf(stderr, "and ");
-                else if (id == 1)
-                    *getRegister16(reg) |= (uint16_t)(mem[*getRegister16(0x04)]);
-                //fprintf(stderr, "or ");
-                else if (id == 2)
-                    *getRegister16(reg) ^= (uint16_t)(mem[*getRegister16(0x04)]);
-                //fprintf(stderr, "xor ");
-            //else
-
-                //fprintf(stderr, "test ");
-                setFlagsZAndS16(*getRegister16(reg));
-            }
-            else
-            {
-                if (id == 0)
-                    *getRegister16(reg) &= *getRegister16(a->id);
-                //fprintf(stderr, "and ");
-                else if (id == 1)
-                    *getRegister16(reg) |= *getRegister16(a->id);
-                //fprintf(stderr, "or ");
-                else if (id == 2)
-                    *getRegister16(reg) ^= *getRegister16(a->id);
-
-                setFlagsZAndS16(*getRegister16(reg));
+                    setFlagsZAndS16(*getRegister16(reg));
+                }
             }
         }
     }
@@ -316,23 +319,27 @@ int logicImmediateToRegMem(uint8_t* text, int curr)
         printMemoryChange(a->disp);
     fprintf(stderr, "\n");
 
-    if (w == 0x00)
+    if (interpret)
     {
-        if (a->id == 9 && interpret)
-            setFlagsZAndS8(*(mem + a->disp) & ((uint8_t)data));
+        if (w == 0x00)
+        {
+            if (a->id == 9 && interpret)
+                setFlagsZAndS8(*(mem + a->disp) & ((uint8_t)data));
+            else
+                setFlagsZAndS8(*getRegister8(a->id) & ((uint8_t)data));
+        }
         else
-            setFlagsZAndS8(*getRegister8(a->id) & ((uint8_t)data));
+        {
+            if (a->id == 9 && interpret)
+                setFlagsZAndS16(*((uint16_t*)(mem + a->disp)) & data);
+            else
+                setFlagsZAndS16(*getRegister16(a->id) & data);
+        }
+
+        cpu->C = 0;
+        cpu->O = 0;
     }
-    else
-    {
-        if (a->id == 9 && interpret)
-            setFlagsZAndS16(*((uint16_t*)(mem + a->disp)) & data);
-        else
-            setFlagsZAndS16(*getRegister16(a->id) & data);
-    }
-    
-    cpu->C = 0;
-    cpu->O = 0;
+
     free(a);
     
     return read;

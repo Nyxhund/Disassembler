@@ -44,6 +44,8 @@ int regMemAddReg(uint8_t* text, int curr, int id)
         fprintf(stderr, "adc ");
     else if (id == 2)
         fprintf(stderr, "sub ");
+    else if (id == 3)
+        fprintf(stderr, "sbb ");
     else
         fprintf(stderr, "cmp");
 
@@ -321,6 +323,8 @@ int immediateAddRegMem(uint8_t* text, int curr)
         fprintf(stderr, "or ");
     else if (id == 0x02)
         fprintf(stderr, "adc ");
+    else if (id == 0x03)
+        fprintf(stderr, "sbb ");
     else if (id == 0x04)
         fprintf(stderr, "and ");
     else if (id == 0x05)
@@ -530,88 +534,91 @@ int incRegMem(uint8_t* text, int curr)
         printMemoryChange(a->disp);
     fprintf(stderr, "\n");
 
-    if (word == 0x00)
-    {
-        if (a->id == 9 && interpret)
+    if (interpret) {
+        if (word == 0x00)
         {
-            if (id == 0x00) // INC
+            if (a->id == 9 && interpret)
             {
-                addO8(*(mem + a->disp), 0x01);
-                *(mem + a->disp) += 1;
-                setFlagsZAndS8(*(mem + a->disp));
-            }
-            else if (id == 0x01)
-            {
-                cmpO8(*(mem + a->disp), 0x01);
-                *(mem + a->disp) -= 1;
-                setFlagsZAndS8(*(mem + a->disp));
-            }
-            //else if (id == 0x02 || 0x03)
-                //fprintf(stderr, "call ");
-            //else if (id == 0x04 || id == 0x05)
-                //fprintf(stderr, "jmp ");
-        }
-        else
-        {
-            if (id == 0x00) // INC
-            {
-                addO8(*getRegister8(a->id), 0x01);
-                setRegister8(a->id, *getRegister8(a->id) + 1);
-                setFlagsZAndS8(*getRegister8(a->id));
-            }
-            else if (id == 0x01)
-            {
-                cmpO8(*getRegister8(a->id), 0x01);
-                setRegister8(a->id, *getRegister8(a->id) - 1);
-                setFlagsZAndS8(*getRegister8(a->id));
-            }
-            //else if (id == 0x02 || 0x03)
-                //fprintf(stderr, "call ");
-            //else if (id == 0x04 || id == 0x05)
-                //fprintf(stderr, "jmp ");
-        }
-    }
-    else
-    {
-        if (a->id == 9 && interpret)
-        {
-            if (id == 0x00) // INC
-            {
-                addO16(*((uint16_t*)(mem + a->disp)), 0x01);
-                *((uint16_t*)(mem + a->disp)) += 1;
-                setFlagsZAndS16(*((uint16_t*)(mem + a->disp)));
-            }
-            else if (id == 0x01)
-            {
-                cmpO16(*((uint16_t*)(mem + a->disp)), 0x01);
-                *((uint16_t*)(mem + a->disp)) -= 1;
-                setFlagsZAndS16(*((uint16_t*)(mem + a->disp)));
-            }
-            //else if (id == 0x02 || 0x03)
-                //fprintf(stderr, "call ");
-            //else if (id == 0x04 || id == 0x05)
-                //fprintf(stderr, "jmp ");
-        }
-        else
-        {
-            if (id == 0x00) // INC
-            {
-                addO16(*getRegister16(a->id), 0x01);
-                setRegister16(a->id, *getRegister16(a->id) + 1);
-                setFlagsZAndS16(*getRegister16(a->id));
-            }
-            else if (id == 0x01)
-            {
-                cmpO16(*getRegister16(a->id), 0x01);
-                setRegister16(a->id, *getRegister16(a->id) - 1);
-                setFlagsZAndS16(*getRegister16(a->id));
-            }
-            //else if (id == 0x02 || 0x03)
+                if (id == 0x00) // INC
+                {
+                    addO8(*(mem + a->disp), 0x01);
+                    *(mem + a->disp) += 1;
+                    setFlagsZAndS8(*(mem + a->disp));
+                }
+                else if (id == 0x01)
+                {
+                    cmpO8(*(mem + a->disp), 0x01);
+                    *(mem + a->disp) -= 1;
+                    setFlagsZAndS8(*(mem + a->disp));
+                }
+                //else if (id == 0x02 || 0x03)
                     //fprintf(stderr, "call ");
-            //else if (id == 0x04 || id == 0x05)
+                //else if (id == 0x04 || id == 0x05)
                     //fprintf(stderr, "jmp ");
+            }
+            else
+            {
+                if (id == 0x00) // INC
+                {
+                    addO8(*getRegister8(a->id), 0x01);
+                    setRegister8(a->id, *getRegister8(a->id) + 1);
+                    setFlagsZAndS8(*getRegister8(a->id));
+                }
+                else if (id == 0x01)
+                {
+                    cmpO8(*getRegister8(a->id), 0x01);
+                    setRegister8(a->id, *getRegister8(a->id) - 1);
+                    setFlagsZAndS8(*getRegister8(a->id));
+                }
+                //else if (id == 0x02 || 0x03)
+                    //fprintf(stderr, "call ");
+                //else if (id == 0x04 || id == 0x05)
+                    //fprintf(stderr, "jmp ");
+            }
+        }
+        else
+        {
+            if (a->id == 9 && interpret)
+            {
+                if (id == 0x00) // INC
+                {
+                    addO16(*((uint16_t*)(mem + a->disp)), 0x01);
+                    *((uint16_t*)(mem + a->disp)) += 1;
+                    setFlagsZAndS16(*((uint16_t*)(mem + a->disp)));
+                }
+                else if (id == 0x01)
+                {
+                    cmpO16(*((uint16_t*)(mem + a->disp)), 0x01);
+                    *((uint16_t*)(mem + a->disp)) -= 1;
+                    setFlagsZAndS16(*((uint16_t*)(mem + a->disp)));
+                }
+                //else if (id == 0x02 || 0x03)
+                    //fprintf(stderr, "call ");
+                //else if (id == 0x04 || id == 0x05)
+                    //fprintf(stderr, "jmp ");
+            }
+            else
+            {
+                if (id == 0x00) // INC
+                {
+                    addO16(*getRegister16(a->id), 0x01);
+                    setRegister16(a->id, *getRegister16(a->id) + 1);
+                    setFlagsZAndS16(*getRegister16(a->id));
+                }
+                else if (id == 0x01)
+                {
+                    cmpO16(*getRegister16(a->id), 0x01);
+                    setRegister16(a->id, *getRegister16(a->id) - 1);
+                    setFlagsZAndS16(*getRegister16(a->id));
+                }
+                //else if (id == 0x02 || 0x03)
+                        //fprintf(stderr, "call ");
+                //else if (id == 0x04 || id == 0x05)
+                        //fprintf(stderr, "jmp ");
+            }
         }
     }
+    free(a);
     return read;
 }
 
@@ -625,17 +632,19 @@ int incReg(uint8_t* text, int curr, int id)
     else
         fprintf(stderr, "dec %s\n", regWord[reg]);
 
-    if (id == 0)
-    {
-        addO16(*getRegister16(reg), 0x01);
-        setRegister16(reg, *getRegister16(reg) + 1);
-        setFlagsZAndS16(*getRegister16(reg));
-    }
-    else
-    {
-        cmpO16(*getRegister16(reg), 0x01);
-        setRegister16(reg, *getRegister16(reg) - 1);
-        setFlagsZAndS16(*getRegister16(reg));
+    if (interpret) {
+        if (id == 0)
+        {
+            addO16(*getRegister16(reg), 0x01);
+            setRegister16(reg, *getRegister16(reg) + 1);
+            setFlagsZAndS16(*getRegister16(reg));
+        }
+        else
+        {
+            cmpO16(*getRegister16(reg), 0x01);
+            setRegister16(reg, *getRegister16(reg) - 1);
+            setFlagsZAndS16(*getRegister16(reg));
+        }
     }
     return 1;
 }

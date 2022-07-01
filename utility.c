@@ -161,10 +161,20 @@ void printReadBytes(int read, uint8_t* text, int curr)
     {
         fprintf(stderr, "%02x", text[i + curr]);
     }
-    for(int i = read; i < 7; i++)
+
+    int upper;
+    if (interpret)
+        upper = 6;
+    else
+        upper = 7;
+    
+    for(int i = read; i < upper; i++)
     {
         fprintf(stderr, "  ");
     }
+
+    if (interpret)
+        fprintf(stderr, " ");
 }
 
 void printRegisters(int curr)

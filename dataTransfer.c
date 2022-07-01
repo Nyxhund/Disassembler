@@ -62,39 +62,42 @@ int RegMemtofromReg(uint8_t* text, int curr, uint8_t dir, uint8_t word)
         printMemoryChange(a->disp);
     fprintf(stderr, "\n");
 
-    if(dir == 0x00) // INTERPRETOR
+    if (interpret)
     {
-        if(a->id == 0x09)
+        if (dir == 0x00) // INTERPRETOR
         {
-            if(word == 0x00)
-                mem[a->disp] = *getRegister8(reg);
+            if (a->id == 0x09)
+            {
+                if (word == 0x00)
+                    mem[a->disp] = *getRegister8(reg);
+                else
+                    *((uint16_t*)(mem + a->disp)) = *getRegister16(reg);
+            }
             else
-                *((uint16_t*)(mem + a->disp)) = *getRegister16(reg);
-        }
-        else
-        {
-            if(word == 0x00)
-                setRegister8(a->id, *getRegister8(reg));
-            else
-                setRegister16(a->id, *getRegister16(reg));
-        }
+            {
+                if (word == 0x00)
+                    setRegister8(a->id, *getRegister8(reg));
+                else
+                    setRegister16(a->id, *getRegister16(reg));
+            }
 
-    }
-    else
-    {
-        if(a->id == 0x09)
-        {
-            if(word == 0x00)
-                setRegister8(reg, mem[a->disp]);
-            else
-                setRegister16(reg, *((uint16_t*)(mem + a->disp)));
         }
         else
         {
-            if(word == 0x00)
-                setRegister8(reg, *getRegister8(a->id));
+            if (a->id == 0x09)
+            {
+                if (word == 0x00)
+                    setRegister8(reg, mem[a->disp]);
+                else
+                    setRegister16(reg, *((uint16_t*)(mem + a->disp)));
+            }
             else
-                setRegister16(reg, *getRegister16(a->id));
+            {
+                if (word == 0x00)
+                    setRegister8(reg, *getRegister8(a->id));
+                else
+                    setRegister16(reg, *getRegister16(a->id));
+            }
         }
     }
 
@@ -155,19 +158,22 @@ int immediateToRegMem(uint8_t* text, int curr, uint8_t word)
         printMemoryChange(a->disp);
     fprintf(stderr, "\n");
 
-    if(a->id == 9) // INTERPRETER
-    { 
-        if(word == 0x00)
-            mem[a->disp] = (uint8_t) data;
-        else
-            mem[a->disp] = data;
-    }
-    else
+    if (interpret)
     {
-        if(word == 0x00)
-            setRegister8(a->id, (uint8_t) data);
+        if (a->id == 9) // INTERPRETER
+        {
+            if (word == 0x00)
+                mem[a->disp] = (uint8_t)data;
+            else
+                mem[a->disp] = data;
+        }
         else
-            setRegister16(a->id, data);
+        {
+            if (word == 0x00)
+                setRegister8(a->id, (uint8_t)data);
+            else
+                setRegister16(a->id, data);
+        }
     }
     free(a);
     return read;
@@ -189,12 +195,15 @@ void immediateToRegister(uint8_t* text, int curr)
         fprintf(stderr, "mov %s, %02x%02x\n", regWord[reg], text[curr + 2], text[curr + 1]);
     }
 
-    if (w == 0x00)
-        setRegister8(reg, text[curr + 1]);
-    else
+    if (interpret)
     {
-        uint16_t data = text[curr + 2] * 256 + text[curr + 1];
-        setRegister16(reg, data);
+        if (w == 0x00)
+            setRegister8(reg, text[curr + 1]);
+        else
+        {
+            uint16_t data = text[curr + 2] * 256 + text[curr + 1];
+            setRegister16(reg, data);
+        }
     }
 }
 
@@ -326,52 +335,56 @@ int pushPopRegMem(uint8_t* text, int curr, int pop)
         printMemoryChange(a->disp);
     fprintf(stderr, "\n");
 
-    if (pop == 0) // PUSH
+    if (interpret)
     {
-        if (word == 0x00)
+        if (pop == 0) // PUSH
         {
-            setRegister16(0x04, *getRegister16(0x04) - 1);
-            if (a->id == 9 && interpret)
-                mem[*getRegister16(0x04)] = mem[a->disp];
+            if (word == 0x00)
+            {
+                setRegister16(0x04, *getRegister16(0x04) - 1);
+                if (a->id == 9 && interpret)
+                    mem[*getRegister16(0x04)] = mem[a->disp];
+                else
+                    mem[*getRegister16(0x04)] = *getRegister8(a->id);
+            }
             else
-                mem[*getRegister16(0x04)] = *getRegister8(a->id);
+            {
+                setRegister16(0x04, *getRegister16(0x04) - 2);
+                if (a->id == 9 && interpret)
+                {
+                    mem[*getRegister16(0x04)] = mem[a->disp];
+                    mem[*getRegister16(0x04) + 1] = mem[a->disp + 1];
+                }
+                else
+                    mem[*getRegister16(0x04)] = *getRegister16(a->id);
+            }
         }
         else
         {
-            setRegister16(0x04, *getRegister16(0x04) - 2);
-            if (a->id == 9 && interpret)
+            if (word == 0x00)
             {
-                mem[*getRegister16(0x04)] = mem[a->disp];
-                mem[*getRegister16(0x04) + 1] = mem[a->disp + 1];
+                if (a->id == 9 && interpret)
+                    mem[a->disp] = mem[*getRegister16(0x04)];
+                else
+                    setRegister8(a->id, mem[*getRegister16(0x04)]);
+
+                setRegister16(0x04, *getRegister16(0x04) + 1);
             }
             else
-                mem[*getRegister16(0x04)] = *getRegister16(a->id);
-        }
-    }
-    else
-    {
-        if (word == 0x00)
-        {
-            if (a->id == 9 && interpret)
-                mem[a->disp] = mem[*getRegister16(0x04)];
-            else
-                setRegister8(a->id, mem[*getRegister16(0x04)]);
-
-            setRegister16(0x04, *getRegister16(0x04) + 1);
-        }
-        else
-        {
-            if (a->id == 9 && interpret)
             {
-                mem[a->disp] = mem[*getRegister16(0x04)];
-                mem[a->disp + 1] = mem[*getRegister16(0x04) + 1];
-            }
-            else
-                setRegister16(a->id, *((uint16_t*)(mem + *getRegister16(0x04))));
+                if (a->id == 9 && interpret)
+                {
+                    mem[a->disp] = mem[*getRegister16(0x04)];
+                    mem[a->disp + 1] = mem[*getRegister16(0x04) + 1];
+                }
+                else
+                    setRegister16(a->id, *((uint16_t*)(mem + *getRegister16(0x04))));
 
-            setRegister16(0x04, *getRegister16(0x04) + 2);
+                setRegister16(0x04, *getRegister16(0x04) + 2);
+            }
         }
     }
+
     free(a);
     return read;
 }
@@ -385,15 +398,18 @@ int pushPopReg(uint8_t* text, int curr, int pop)
     else 
         fprintf(stderr, "pop %s\n", regWord[reg]);
 
-    if (pop == 0)
+    if (interpret)
     {
-        setRegister16(0x04, *getRegister16(0x04) - 2);
-        *((uint16_t*)(mem + *getRegister16(0x04))) = *getRegister16(reg);
-    }
-    else
-    {
-        setRegister16(reg, *((uint16_t*)(mem + *getRegister16(0x04))));
-        setRegister16(0x04, *getRegister16(0x04) + 2);
+        if (pop == 0)
+        {
+            setRegister16(0x04, *getRegister16(0x04) - 2);
+            *((uint16_t*)(mem + *getRegister16(0x04))) = *getRegister16(reg);
+        }
+        else
+        {
+            setRegister16(reg, *((uint16_t*)(mem + *getRegister16(0x04))));
+            setRegister16(0x04, *getRegister16(0x04) + 2);
+        }
     }
     return 1;
 }
@@ -472,16 +488,24 @@ int inOutFromTo(uint8_t* text, int curr, int port, int out)
         printReadBytes(1, text, curr);
 
     if(out == 0)
-        fprintf(stderr, "in ");
+        fprintf(stderr, "in");
     else
-        fprintf(stderr, "out ");
-
+        fprintf(stderr, "out");
+    
     if(port == 1)
     {
         if(word == 0x00)
-            fprintf(stderr, "%s, %x", regByte[0], text[curr+1]);
+            fprintf(stderr, " %s, %x", regByte[0], text[curr+1]);
         else
-            fprintf(stderr, "%s, %x", regWord[0], text[curr+1]);
+            fprintf(stderr, " %s, %x", regWord[0], text[curr+1]);
+    }
+    else
+    {
+        if (word == 0x00)
+            fprintf(stderr, " %s, dx", regByte[0]);
+        else
+            fprintf(stderr, " %s, dx", regWord[0]);
+
     }
     fprintf(stderr, "\n");
     return read;
@@ -532,25 +556,28 @@ int leaLdsLes(uint8_t* text, int curr, int id)
         printMemoryChange(a->disp);
     fprintf(stderr, "\n");
 
-    if (word == 0x00)
+    if (interpret)
     {
-        if (id == 0)
-            setRegister16(reg, a->disp);
+        if (word == 0x00)
+        {
+            if (id == 0)
+                setRegister16(reg, a->disp);
             //fprintf(stderr, "lea ");
         //else if (id == 1)
             //fprintf(stderr, "lds ");
         //else
             //fprintf(stderr, "les ");
-    }
-    else
-    {
-        if (id == 0)
-            setRegister16(reg, a->disp);
-        //fprintf(stderr, "lea ");
-        //else if (id == 1)
-            //fprintf(stderr, "lds ");
-        //else
-            //fprintf(stderr, "les ");s
+        }
+        else
+        {
+            if (id == 0)
+                setRegister16(reg, a->disp);
+            //fprintf(stderr, "lea ");
+            //else if (id == 1)
+                //fprintf(stderr, "lds ");
+            //else
+                //fprintf(stderr, "les ");s
+        }
     }
 
     free(a);

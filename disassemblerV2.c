@@ -112,6 +112,19 @@ int printInfo(uint8_t* text, int curr, int max)
         case 0x17:
             read = pushPopSeg(text, curr, 1);
             break;
+
+        case 0x18:
+            read = regMemAddReg(text, curr, 3);
+            break;
+        case 0x19:
+            read = regMemAddReg(text, curr, 3);
+            break;
+        case 0x1a:
+            read = regMemAddReg(text, curr, 3);
+            break;
+        case 0x1b:
+            read = regMemAddReg(text, curr, 3);
+            break;
         
         case 0x1e:
             read = pushPopSeg(text, curr, 0);

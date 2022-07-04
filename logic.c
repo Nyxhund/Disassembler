@@ -112,9 +112,9 @@ int logicRegMemToEither(uint8_t* text, int curr, int id)
     else
     {
         if (word == 0x00)
-            fprintf(stderr, ", %s", regByte[reg]);
+            fprintf(stderr, "%s, ", regByte[reg]);
         else
-            fprintf(stderr, ", %s", regWord[reg]);
+            fprintf(stderr, "%s, ", regWord[reg]);
 
         printRm(rm, mod, disp, word, 0x00);
     }
@@ -311,10 +311,16 @@ int logicImmediateToRegMem(uint8_t* text, int curr)
     struct pair* a = getRmAddress(rm, mod, disp, w);
     printReadBytes(read, text, curr);
     fprintf(stderr, "test ");
+    if (w == 0x00 && a->id == 9)
+        fprintf(stderr, "byte ");
 
     printRm(rm, mod, disp, w, 0x00);
 
-    fprintf(stderr, ", %x", data);
+    if(w == 0x00)
+        fprintf(stderr, ", %x", data);
+    else
+        fprintf(stderr, ", %04x", data);
+
     if (a->id == 9 && interpret)
         printMemoryChange(a->disp);
     fprintf(stderr, "\n");

@@ -47,7 +47,7 @@ int regMemAddReg(uint8_t* text, int curr, int id)
     else if (id == 3)
         fprintf(stderr, "sbb ");
     else
-        fprintf(stderr, "cmp");
+        fprintf(stderr, "cmp ");
 
     if (dir == 0x00)
     {
@@ -298,7 +298,7 @@ int immediateAddRegMem(uint8_t* text, int curr)
         
         if(sw == 0x01)
             data = text[curr+4] * 256 + text[curr+3];
-        else if (sw = 0x03)
+        else if (sw == 0x03)
             data = (int8_t) text[curr+3];
         else
             data = text[curr+3];
@@ -309,7 +309,7 @@ int immediateAddRegMem(uint8_t* text, int curr)
         
         if(sw == 0x01)
             data = text[curr+3] * 256 + text[curr+2];
-        else if (sw = 0x03)
+        else if (sw == 0x03)
             data = (int8_t) text[curr+2];
         else
             data = text[curr+2];
@@ -334,22 +334,32 @@ int immediateAddRegMem(uint8_t* text, int curr)
     else if (id == 0x07)
         fprintf(stderr, "cmp ");
 
+    if (sw == 0x00)
+    {
+        fprintf(stderr, "byte ");
+    }
     printRm(rm, mod, disp, sw % 2, 0x00);
 
-    if (sw == 0x03)
+
+    if (sw % 2 == 0x01)
     {
-        if (data >= 0x8000)
-            fprintf(stderr, ", -%04x", ~data + 1);
+        if (data >= 0x8000 && sw == 0x03)
+            fprintf(stderr, ", -%x", (uint16_t) (~data) + 1);
         else
         {
-            if (id == 0x05 || id == 0x07 || id == 0x00)
+            if (id == 0x00 || (id == 0x05 && sw == 0x03) || id == 0x03 || (id == 0x07 && sw == 0x03))
                 fprintf(stderr, ", %x", data);
             else
                 fprintf(stderr, ", %04x", data);
         }
     }
     else
-        fprintf(stderr, ", %04x", data);
+    {
+        if(id == 0x07)
+            fprintf(stderr, ", %x", data);
+        else
+            fprintf(stderr, ", %04x", data);
+    }
 
     if (a->id == 9 && interpret)
         printMemoryChange(a->disp);
@@ -487,7 +497,7 @@ int immediateToAccu(uint8_t* text, int curr, int id)
     if(word == 0x00)
         fprintf(stderr, "%s, %x\n", regByte[0], data);
     else
-        fprintf(stderr, "%s, %x\n", regWord[0], data);
+        fprintf(stderr, "%s, %04x\n", regWord[0], data);
 
     return read;
 }

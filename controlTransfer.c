@@ -215,9 +215,10 @@ int conditionalJump(uint8_t* text, int curr)
             fprintf(stderr, "jle ");
             break;
         case 0x0f:
-            fprintf(stderr, "jnbe ");
+            fprintf(stderr, "jnle ");
             break;
     }
+
 
     fprintf(stderr, "%04x\n", 0x02 + disp + curr);
 
@@ -248,7 +249,7 @@ int conditionalJump(uint8_t* text, int curr)
         case 0x04:
             //fprintf(stderr, "je ");
             if (cpu->Z)
-                read = disp + 0x02;
+                read = disp - 0xfe;
             break;
         case 0x05:
             //fprintf(stderr, "jne ");
@@ -297,8 +298,8 @@ int conditionalJump(uint8_t* text, int curr)
                 read = disp + 0x02;
             break;
         case 0x0f:
-            //fprintf(stderr, "jnbe ");
-            if (!cpu->C && !cpu->Z)
+            //fprintf(stderr, "jnle ");
+            if (!cpu->S && !cpu->Z)
                 read = disp + 0x02;
             break;
         }

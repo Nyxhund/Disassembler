@@ -209,16 +209,16 @@ int printInfo(uint8_t* text, int curr, int max)
             break;
 
         case 0x38:
-            read = regMemAddReg(text, curr, 3);
+            read = regMemAddReg(text, curr, 4);
             break;
         case 0x39:
-            read = regMemAddReg(text, curr, 3);
+            read = regMemAddReg(text, curr, 4);
             break;
         case 0x3a:
-            read = regMemAddReg(text, curr, 3);
+            read = regMemAddReg(text, curr, 4);
             break;
         case 0x3b:
-            read = regMemAddReg(text, curr, 3);
+            read = regMemAddReg(text, curr, 4);
             break;
         case 0x3c:
             read = immediateToAccu(text, curr, 3);

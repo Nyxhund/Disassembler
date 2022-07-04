@@ -151,9 +151,18 @@ int immediateToRegMem(uint8_t* text, int curr, uint8_t word)
     printReadBytes(read, text, curr);
     fprintf(stderr, "mov ");
 
+    if (word == 0x00)
+    {
+        fprintf(stderr, "byte ");
+    }
+
     printRm(rm, mod, disp, word, 0x00);
 
-    fprintf(stderr, ", %x", data);
+    if(word == 0x00)
+        fprintf(stderr, ", %x", data);
+    else
+        fprintf(stderr, ", %04x", data);
+
     if (a->id == 9 && interpret)
         printMemoryChange(a->disp);
     fprintf(stderr, "\n");

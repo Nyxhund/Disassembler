@@ -336,7 +336,7 @@
 033b: e9e60d        jmp 1124
 033e: ff4604        inc [bp+4]
 0341: f7c70010      test di, 1000
-0345: 74eb          je 0432
+0345: 74eb          je 0332
 0347: 8b5604        mov dx, [bp+4]
 034a: 8956ea        mov [bp-16], dx
 034d: 8d4606        lea ax, [bp+6]
@@ -738,7 +738,7 @@
 0754: b8ffff        mov ax, ffff
 0757: e9a500        jmp 07ff
 075a: ff4efa        dec [bp-6]
-075d: 75c0          jne 081f
+075d: 75c0          jne 071f
 075f: 8b56fc        mov dx, [bp-4]
 0762: 0156ec        add [bp-14], dx
 0765: ff4efc        dec [bp-4]
@@ -768,7 +768,7 @@
 0796: 50            push ax
 0797: 5a            pop dx
 0798: 83faff        cmp dx, -1
-079b: 75c8          jne 0865
+079b: 75c8          jne 0765
 079d: 837eec00      cmp [bp-14], 0
 07a1: 7407          je 07aa
 07a3: 8b46ec        mov ax, [bp-14]
@@ -802,7 +802,7 @@
 07e3: 50            push ax
 07e4: 5a            pop dx
 07e5: 83faff        cmp dx, -1
-07e8: 75d1          jne 08bb
+07e8: 75d1          jne 07bb
 07ea: 837eec00      cmp [bp-14], 0
 07ee: 7407          je 07f7
 07f0: 8b46ec        mov ax, [bp-14]
@@ -1092,7 +1092,7 @@
 0ad2: 7717          jnbe 0aeb
 0ad4: 8b5604        mov dx, [bp+4]
 0ad7: 03161602      add dx, [0216]
-0adb: 81c2ff03      add dx, 3ff
+0adb: 81c2ff03      add dx, 03ff
 0adf: 81e200fc      and dx, fc00
 0ae3: 89d6          mov si, dx
 0ae5: 39161602      cmp [0216], dx
@@ -1727,11 +1727,9 @@
 1105: a801          test al, 1
 1107: 7506          jne 110f
 1109: d1e9          shr cx, 1
-110b: f2            rep
-110c: a5            movs
+110b: f2a5          rep movsw
 110d: 11c9          adc cx, cx
-110f: f2            rep
-1110: a4            movs
+110f: f2a4          rep movsb
 1111: 8b4604        mov ax, [bp+4]
 1114: 5f            pop di
 1115: 5e            pop si
@@ -1742,8 +1740,7 @@
 111b: 4e            dec si
 111c: 01cf          add di, cx
 111e: 4f            dec di
-111f: f2            rep
-1120: a4            movs
+111f: f2a4          rep movsb
 1121: fc            cld
 1122: ebed          jmp short 1111
 1124: 8b17          mov dx, [bx]
@@ -1752,14 +1749,14 @@
 112c: 49            dec cx
 112d: 7c14          jl 1143
 112f: 3b07          cmp ax, [bx]
-1131: 75f6          jne 1229
+1131: 75f6          jne 1129
 1133: 8b5f02        mov bx, [bx+2]
 1136: 85db          test bx, bx
 1138: 7507          jne 1141
 113a: b81400        mov ax, 0014
 113d: 50            push ax
 113e: e95400        jmp 1195
-1141: ffe3          call bx
+1141: ffe3          jmp bx
 1143: 89d3          mov bx, dx
 1145: ebef          jmp short 1136
 1147: 56            push si
@@ -1772,13 +1769,13 @@
 1155: 31d2          xor dx, dx
 1157: 8b4c0a        mov cx, [si+a]
 115a: 8b440c        mov ax, [si+c]
-115d: f7f3          bx
+115d: f7f3          div bx
 115f: 91            xchg cx, ax
-1160: f7f3          bx
+1160: f7f3          div bx
 1162: 89ca          mov dx, cx
 1164: 5f            pop di
 1165: 5e            pop si
-1166: c20800        ret 1171
+1166: c20800        ret 0008
 1169: 89c7          mov di, ax
 116b: 31db          xor bx, bx
 116d: 8b440a        mov ax, [si+a]
@@ -1792,12 +1789,12 @@
 1180: 7209          jb 118b
 1182: 395406        cmp [si+6], dx
 1185: 7604          jbe 118b
-1187: e2ed          loop 1276
+1187: e2ed          loop 1176
 1189: ebd7          jmp short 1162
 118b: 2b5406        sub dx, [si+6]
 118e: 19fb          sbb bx, di
 1190: 40            inc ax
-1191: e2e3          loop 1276
+1191: e2e3          loop 1176
 1193: ebcd          jmp short 1162
 1195: e8b800        call 1250
 1198: e85c00        call 11f7
@@ -1819,15 +1816,15 @@
 11b3: 31d2          xor dx, dx
 11b5: 8b4c0a        mov cx, [si+a]
 11b8: 8b440c        mov ax, [si+c]
-11bb: f7f3          bx
+11bb: f7f3          div bx
 11bd: 91            xchg cx, ax
-11be: f7f3          bx
+11be: f7f3          div bx
 11c0: 31db          xor bx, bx
 11c2: 89d0          mov ax, dx
 11c4: 89da          mov dx, bx
 11c6: 5f            pop di
 11c7: 5e            pop si
-11c8: c20800        ret 11d3
+11c8: c20800        ret 0008
 11cb: 89c7          mov di, ax
 11cd: 31db          xor bx, bx
 11cf: 8b440a        mov ax, [si+a]
@@ -1841,12 +1838,12 @@
 11e2: 7209          jb 11ed
 11e4: 395406        cmp [si+6], dx
 11e7: 7604          jbe 11ed
-11e9: e2ed          loop 12d8
+11e9: e2ed          loop 11d8
 11eb: ebd5          jmp short 11c2
 11ed: 2b5406        sub dx, [si+6]
 11f0: 19fb          sbb bx, di
 11f2: 40            inc ax
-11f3: e2e3          loop 12d8
+11f3: e2e3          loop 11d8
 11f5: ebcb          jmp short 11c2
 11f7: e8a2ee        call 009c
 11fa: b80600        mov ax, 0006
@@ -1906,7 +1903,7 @@
 127b: d1fa          sar dx, 1
 127d: d1fa          sar dx, 1
 127f: d1fa          sar dx, 1
-1281: e2ed          loop 1370
+1281: e2ed          loop 1270
 1283: baf501        mov dx, 01f5
 1286: ebaa          jmp short 1232
 1288: 55            push bp

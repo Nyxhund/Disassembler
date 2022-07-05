@@ -27,7 +27,10 @@ int controlDirect(uint8_t* text, int curr, int id)
     else if (id == 3)
         fprintf(stderr, "ret ");
 
-    fprintf(stderr, "%04x\n", (uint16_t) (disp + curr + 0x03));
+    if(id != 3)
+        fprintf(stderr, "%04x\n", (uint16_t) (disp + curr + 0x03));
+    else
+        fprintf(stderr, "%04x\n", disp);
 
     if (interpret) {
         if (id == 0)
@@ -41,7 +44,15 @@ int controlDirect(uint8_t* text, int curr, int id)
         else if (id == 2)
             read = 3;
         else if (id == 3)
-            read = 3;
+        {
+            /*
+            read = *((uint16_t*)(mem + *getRegister16(0x04))) + 0x03 - curr;
+            fprintf(stderr, "%04x\n", read);
+            setRegister16(0x04, *getRegister16(0x04) + 2);
+            
+            if(!interpret)*/
+                read = 3;
+        }
     }
 
     return read;
@@ -163,7 +174,7 @@ int controlSimpleCommands(uint8_t* text, int curr, int id)
 int conditionalJump(uint8_t* text, int curr)
 {
     uint8_t id = text[curr] % 16;
-    uint16_t disp = text[curr+1];
+    uint16_t disp = (int8_t) text[curr+1];
     printReadBytes(2, text, curr);
 
     int read = 2;
@@ -220,7 +231,7 @@ int conditionalJump(uint8_t* text, int curr)
     }
 
 
-    fprintf(stderr, "%04x\n", 0x02 + disp + curr);
+    fprintf(stderr, "%04x\n", (0x02 + disp + curr) % 0x10000);
 
     if (interpret)
     {
@@ -310,7 +321,7 @@ int conditionalJump(uint8_t* text, int curr)
 int conditionalLoop(uint8_t* text, int curr)
 {
     uint8_t id = text[curr] % 4;
-    uint16_t disp = text[curr+1];
+    uint16_t disp = (int8_t) text[curr+1];
     printReadBytes(2, text, curr);
 
     switch (id)
@@ -329,7 +340,7 @@ int conditionalLoop(uint8_t* text, int curr)
             break;
     }
 
-    fprintf(stderr, "%04x\n", 0x02 + disp + curr);
+    fprintf(stderr, "%04x\n", (0x02 + disp + curr) % 0x10000);
     return 2;
 }
 

@@ -354,28 +354,42 @@ int logicImmediateToRegMem(uint8_t* text, int curr)
 int stringManipulation(uint8_t* text, int curr, int id)
 {
     uint8_t w = text[curr] % 2;
-    printReadBytes(1, text, curr);
+    printReadBytes(2, text, curr);
 
-    switch (id)
-    {
-        case 0:
-            fprintf(stderr, "rep\n");
-            break;
-        case 1:
-            fprintf(stderr, "movs\n");
-            break;
-        case 2:
-            fprintf(stderr, "cmps\n");
-            break;
-        case 3:
-            fprintf(stderr, "scas\n");
-            break;
-        case 4:
-            fprintf(stderr, "lods\n");
-            break;
-        case 5:
-            fprintf(stderr, "stos\n");
-            break;
+    fprintf(stderr, "rep ");
+
+    switch (text[curr + 1]) {
+    case 0xa4:
+        fprintf(stderr, "movsb\n");
+        break;
+    case 0xa5:
+        fprintf(stderr, "movsw\n");
+        break;
+    case 0xa6:
+        fprintf(stderr, "cmpsb\n");
+        break;
+    case 0xa7:
+        fprintf(stderr, "cmpsw\n");
+        break;
+    case 0xae:
+        fprintf(stderr, "scasb\n");
+        break;
+    case 0xaf:
+        fprintf(stderr, "scasw\n");
+        break;
+    case 0xac:
+        fprintf(stderr, "lodsb\n");
+        break;
+    case 0xad:
+        fprintf(stderr, "lodsw\n");
+        break;
+    case 0xaa:
+        fprintf(stderr, "stosb\n");
+        break;
+    case 0xab:
+        fprintf(stderr, "stosw\n");
+        break;
     }
-    return 1;
+
+    return 2;
 }

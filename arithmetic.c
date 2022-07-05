@@ -347,7 +347,7 @@ int immediateAddRegMem(uint8_t* text, int curr)
             fprintf(stderr, ", -%x", (uint16_t) (~data) + 1);
         else
         {
-            if (id == 0x00 || (id == 0x05 && sw == 0x03) || id == 0x03 || (id == 0x07 && sw == 0x03))
+            if ((id == 0x00 && sw == 0x03) || (id == 0x05 && sw == 0x03) || id == 0x03 || (id == 0x07 && sw == 0x03))
                 fprintf(stderr, ", %x", data);
             else
                 fprintf(stderr, ", %04x", data);
@@ -502,7 +502,7 @@ int immediateToAccu(uint8_t* text, int curr, int id)
     return read;
 }
 
-int incRegMem(uint8_t* text, int curr)
+int incRegMem(uint8_t* text, int curr) // e3 = 11 10 0 011  227 192 35
 {
     uint8_t word = text[curr] % 2;
     uint8_t mod = text[curr+1] / 64;
@@ -530,11 +530,12 @@ int incRegMem(uint8_t* text, int curr)
     }
 
     struct pair* a = getRmAddress(rm, mod, disp, word);
+
     if(id == 0x00)
         fprintf(stderr, "inc ");
     else if(id == 0x01)
         fprintf(stderr, "dec ");
-    else if(id == 0x02 || 0x03)
+    else if(id == 0x02 || id == 0x03)
         fprintf(stderr, "call ");
     else if(id == 0x04 || id == 0x05)
         fprintf(stderr, "jmp ");
@@ -711,14 +712,18 @@ int negMul(uint8_t* text, int curr)
         read = 2;
     }
 
-    if(id == 0x03)
+    if (id == 0x03)
         fprintf(stderr, "neg ");
-    else if(id == 0x04)
+    else if (id == 0x04)
         fprintf(stderr, "mul ");
-    else if(id == 0x05)
+    else if (id == 0x05)
         fprintf(stderr, "imul ");
-    else if(id == 0x02)
+    else if (id == 0x02)
         fprintf(stderr, "not ");
+    else if (id == 0x06)
+        fprintf(stderr, "div ");
+    else if (id == 0x07)
+        fprintf(stderr, "idiv ");
 
     printRm(rm, mod, disp, word, 0x00);
     fprintf(stderr, "\n");

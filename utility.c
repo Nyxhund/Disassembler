@@ -330,7 +330,10 @@ void cmpO16(uint16_t dest, uint16_t src)
         cpu->O = 0;
 }
 
-void printMemoryChange(uint16_t addr)
+void printMemoryChange(uint16_t addr, uint8_t w)
 {
-    fprintf(stderr, " ;[%04x]%04x", addr, *((uint16_t*)(mem + addr)));
+    if(w == 0x01)
+        fprintf(stderr, " ;[%04x]%04x", addr, *((uint16_t*)(mem + addr)));
+    else
+        fprintf(stderr, " ;[%04x]%02x", addr, *(mem + addr));
 }

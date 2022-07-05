@@ -39,7 +39,7 @@ void setRegister8(uint8_t reg, uint8_t val);
 void setFlagsZAndS8(uint8_t val);
 void setFlagsZAndS16(uint16_t val);
 
-void printMemoryChange(uint16_t addr);
+void printMemoryChange(uint16_t addr, uint8_t w);
 
 void addOAC8(uint8_t dest, uint8_t src);
 void addOAC16(uint16_t dest, uint16_t src);

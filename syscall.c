@@ -10,6 +10,7 @@
 #include "stdio.h"
 #include "utility.h"
 #include "syscall.h"
+#include "errno.h"
 
 void syscall()
 {
@@ -27,6 +28,13 @@ void syscall()
 		case 1:
 			fprintf(stderr, "<exit(%d)>\n", m->m1_i1);
 			exit(m->m1_i1);
+			break;
+
+		case 54:
+			fprintf(stderr, "<ioctl(%d, 0x%04x, 0x%04x)>\n", *((uint16_t*)(mem + *getRegister16(0x03) + 4)), *((uint16_t*)(mem + *getRegister16(0x03) + 8)), *((uint16_t*)(mem + *getRegister16(0x03) + 18)));
+			errno = EINVAL;
+			setRegister16(0x00, 0x00);
+			m->m_type = -errno;
 			break;
 	}
 }

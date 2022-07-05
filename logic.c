@@ -119,7 +119,7 @@ int logicRegMemToEither(uint8_t* text, int curr, int id)
         printRm(rm, mod, disp, word, 0x00);
     }
     if (a->id == 9 && interpret)
-        printMemoryChange(a->disp);
+        printMemoryChange(a->disp, word);
     fprintf(stderr, "\n");
 
     if (interpret)
@@ -142,6 +142,7 @@ int logicRegMemToEither(uint8_t* text, int curr, int id)
                 //else
 
                     //fprintf(stderr, "test ");
+
                     setFlagsZAndS8(mem[*getRegister16(0x04)]);
                 }
                 else
@@ -261,6 +262,8 @@ int logicRegMemToEither(uint8_t* text, int curr, int id)
         }
     }
 
+    cpu->C = 0;
+    cpu->O = 0;
     free(a);
     return read;
 }
@@ -322,7 +325,7 @@ int logicImmediateToRegMem(uint8_t* text, int curr)
         fprintf(stderr, ", %04x", data);
 
     if (a->id == 9 && interpret)
-        printMemoryChange(a->disp);
+        printMemoryChange(a->disp, w);
     fprintf(stderr, "\n");
 
     if (interpret)

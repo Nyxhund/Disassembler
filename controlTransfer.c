@@ -62,9 +62,12 @@ int jumpShort(uint8_t* text, int curr)
 {
     int8_t disp = text[curr+1];
     printReadBytes(2, text, curr);
+    int read = 2;
 
     fprintf(stderr, "jmp short %04x\n", disp + curr + 2);
-    return 2;
+    if (interpret)
+        read = disp + 2;
+    return read;
 }
 
 int controlSimpleCommands(uint8_t* text, int curr, int id)
@@ -260,7 +263,7 @@ int conditionalJump(uint8_t* text, int curr)
         case 0x04:
             //fprintf(stderr, "je ");
             if (cpu->Z)
-                read = disp - 0xfe;
+                read = disp + 0x02;
             break;
         case 0x05:
             //fprintf(stderr, "jne ");

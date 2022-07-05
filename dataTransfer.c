@@ -59,7 +59,7 @@ int RegMemtofromReg(uint8_t* text, int curr, uint8_t dir, uint8_t word)
     }
 
     if (a->id == 9 && interpret)
-        printMemoryChange(a->disp);
+        printMemoryChange(a->disp, word);
     fprintf(stderr, "\n");
 
     if (interpret)
@@ -164,7 +164,7 @@ int immediateToRegMem(uint8_t* text, int curr, uint8_t word)
         fprintf(stderr, ", %04x", data);
 
     if (a->id == 9 && interpret)
-        printMemoryChange(a->disp);
+        printMemoryChange(a->disp, word);
     fprintf(stderr, "\n");
 
     if (interpret)
@@ -341,7 +341,7 @@ int pushPopRegMem(uint8_t* text, int curr, int pop)
 
     printRm(rm, mod, disp, word, 0x00);
     if (a->id == 9 && interpret)
-        printMemoryChange(a->disp);
+        printMemoryChange(a->disp, word);
     fprintf(stderr, "\n");
 
     if (interpret)
@@ -562,7 +562,7 @@ int leaLdsLes(uint8_t* text, int curr, int id)
     printRm(rm, mod, disp, word, 0x00);
 
     if (a->id == 9 && interpret)
-        printMemoryChange(a->disp);
+        printMemoryChange(a->disp, word);
     fprintf(stderr, "\n");
 
     if (interpret)

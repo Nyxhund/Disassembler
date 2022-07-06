@@ -39,6 +39,7 @@ int shifts(uint8_t* text, int curr) // D (0->3)
         read = 2;
     }
 
+    struct pair* a = getRmAddress(rm, mod, disp, w);
     if(id == 0x00)
         fprintf(stderr, "rol ");
     else if (id == 0x01)
@@ -57,10 +58,220 @@ int shifts(uint8_t* text, int curr) // D (0->3)
     printRm(rm, mod, disp, w, 0x00);
     
     if(v == 0x00)
-        fprintf(stderr, ", 1\n");
+        fprintf(stderr, ", 1");
     else
-        fprintf(stderr, ", cl\n");
+        fprintf(stderr, ", cl");
 
+    if (a->id == 9 && interpret)
+        printMemoryChange(a->disp, w);
+    fprintf(stderr, "\n");
+
+    if (interpret)
+    {
+        int rot;
+        if (v == 0x00)
+            rot = 1;
+        else
+            rot = *getRegister8(0x01);
+
+        int tmp;
+        if (w == 0x00)
+        {
+            if (a->id == 9)
+            {
+                switch (id)
+                {
+                    case 0x00: // ROL
+                        *(mem + a->disp) <<= rot;
+                        break;
+                    case 0x01: // ROR
+                        *(mem + a->disp) >>= rot;
+                        break;
+
+                    case 0x02: // RCL
+                        *(mem + a->disp) <<= rot;
+                        tmp = cpu->C;
+                        cpu->C = *(mem + a->disp) % 2;
+                        if (tmp)
+                            *(mem + a->disp) |= 0x01;
+                        else
+                            *(mem + a->disp) &= 0x00;
+                        break;
+
+                    case 0x03: // RCR
+                        tmp = cpu->C;
+                        cpu->C = *(mem + a->disp) % 2;
+                        if (tmp)
+                            *(mem + a->disp) |= 0x01;
+                        else
+                            *(mem + a->disp) &= 0x00;
+                        *(mem + a->disp) >>= rot;
+                        break;
+
+                    case 0x04:
+                        *(mem + a->disp) <<= rot;
+                        cpu->C = *(mem + a->disp) % 2;
+                        *(mem + a->disp) &= 0x00;
+                        break;
+                    case 0x05:
+                        cpu->C = *(mem + a->disp) % 2;
+                        *(mem + a->disp) &= 0x00;
+                        *(mem + a->disp) >>= rot;
+                        break;
+                    case 0x07:
+                        *(mem + a->disp) >>= rot;
+                        break;
+                }
+                setFlagsZAndS8(*(mem + a->disp));
+            }
+            else
+            {
+                switch (id)
+                {
+                case 0x00: // ROL
+                    *getRegister8(a->id) <<= rot;
+                    break;
+                case 0x01: // ROR
+                    *getRegister8(a->id) >>= rot;
+                    break;
+
+                case 0x02: // RCL
+                    *getRegister8(a->id) <<= rot;
+                    tmp = cpu->C;
+                    cpu->C = *getRegister8(a->id) % 2;
+                    if (tmp)
+                        *getRegister8(a->id) |= 0x01;
+                    else
+                        *getRegister8(a->id) &= 0x00;
+                    break;
+
+                case 0x03: // RCR
+                    tmp = cpu->C;
+                    cpu->C = *getRegister8(a->id) % 2;
+                    if (tmp)
+                        *getRegister8(a->id) |= 0x01;
+                    else
+                        *getRegister8(a->id) &= 0x00;
+                    *getRegister8(a->id) >>= rot;
+                    break;
+
+                case 0x04:
+                    setRegister8(a->id, *getRegister8(a->id) << rot);
+                    cpu->C = *getRegister8(a->id) % 2;
+                    *getRegister8(a->id) &= 0x00;
+                    break;
+                case 0x05:
+                    cpu->C = *getRegister8(a->id) % 2;
+                    *getRegister8(a->id) &= 0x00;
+                    setRegister8(a->id, *getRegister8(a->id) >> rot);
+                    break;
+                case 0x07:
+                    *getRegister8(a->id) >>= rot;
+                    break;
+                }
+                setFlagsZAndS8(*getRegister8(a->id));
+            }
+        }
+        else
+        {
+            if (a->id == 9)
+            {
+                switch (id)
+                {
+                case 0x00: // ROL
+                    *((uint16_t*)(mem + a->disp)) <<= rot;
+                    break;
+                case 0x01: // ROR
+                    *((uint16_t*)(mem + a->disp)) >>= rot;
+                    break;
+
+                case 0x02: // RCL
+                    *((uint16_t*)(mem + a->disp)) <<= rot;
+                    tmp = cpu->C;
+                    cpu->C = *((uint16_t*)(mem + a->disp)) % 2;
+                    if (tmp)
+                        *((uint16_t*)(mem + a->disp)) |= 0x01;
+                    else
+                        *((uint16_t*)(mem + a->disp)) &= 0x00;
+                    break;
+
+                case 0x03: // RCR
+                    tmp = cpu->C;
+                    cpu->C = *((uint16_t*)(mem + a->disp)) % 2;
+                    if (tmp)
+                        *((uint16_t*)(mem + a->disp)) |= 0x01;
+                    else
+                        *((uint16_t*)(mem + a->disp)) &= 0x00;
+                    *((uint16_t*)(mem + a->disp)) >>= rot;
+                    break;
+
+                case 0x04: // SHL
+                    *((uint16_t*)(mem + a->disp)) <<= rot;
+                    cpu->C = *((uint16_t*)(mem + a->disp)) % 2;
+                    *((uint16_t*)(mem + a->disp)) &= 0x00;
+                    break;
+                case 0x05: // SHR
+                    cpu->C = *((uint16_t*)(mem + a->disp)) % 2;
+                    *((uint16_t*)(mem + a->disp)) &= 0x00;
+                    *((uint16_t*)(mem + a->disp)) >>= rot;
+                    break;
+                case 0x07: // SAR
+                    *((uint16_t*)(mem + a->disp)) >>= rot;
+                    break;
+                }
+                setFlagsZAndS16(*((uint16_t*)(mem + a->disp)));
+            }
+            else
+            {
+                switch (id)
+                {
+                case 0x00: // ROL
+                    *getRegister16(a->id) <<= rot;
+                    break;
+                case 0x01: // ROR
+                    *getRegister16(a->id) >>= rot;
+                    break;
+
+                case 0x02: // RCL
+                    *getRegister16(a->id) <<= rot;
+                    tmp = cpu->C;
+                    cpu->C = *getRegister16(a->id) % 2;
+                    if (tmp)
+                        *getRegister16(a->id) |= 0x01;
+                    else
+                        *getRegister16(a->id) &= 0x00;
+                    break;
+
+                case 0x03: // RCR
+                    tmp = cpu->C;
+                    cpu->C = *getRegister16(a->id) % 2;
+                    if (tmp)
+                        *getRegister16(a->id) |= 0x01;
+                    else
+                        *getRegister16(a->id) &= 0x00;
+                    *getRegister16(a->id) >>= rot;
+                    break;
+
+                case 0x04:
+                    setRegister16(a->id, *getRegister16(a->id) << rot);
+                    cpu->C = *getRegister16(a->id) % 2;
+                    *getRegister16(a->id) &= 0x00;
+                    break;
+                case 0x05:
+                    cpu->C = *getRegister16(a->id) % 2;
+                    *getRegister16(a->id) &= 0x00;
+                    setRegister16(a->id, *getRegister16(a->id) >> rot);
+                    break;
+                case 0x07:
+                    *getRegister16(a->id) >>= rot;
+                    break;
+                }
+                setFlagsZAndS8(*getRegister16(a->id));
+            }
+        }
+    }
+
+    free(a);
     return read;
 }
 
@@ -131,19 +342,19 @@ int logicRegMemToEither(uint8_t* text, int curr, int id)
                 if (a->id == 9 && interpret)
                 {
                     if (id == 0)
-                        mem[*getRegister16(0x04)] &= *getRegister8(reg);
+                        mem[a->disp] &= *getRegister8(reg);
                     //fprintf(stderr, "and ");
                     else if (id == 1)
-                        mem[*getRegister16(0x04)] |= *getRegister8(reg);
+                        mem[a->disp] |= *getRegister8(reg);
                     //fprintf(stderr, "or ");
                     else if (id == 2)
-                        mem[*getRegister16(0x04)] ^= *getRegister8(reg);
+                        mem[a->disp] ^= *getRegister8(reg);
                     //fprintf(stderr, "xor ");
                 //else
 
                     //fprintf(stderr, "test ");
 
-                    setFlagsZAndS8(mem[*getRegister16(0x04)]);
+                    setFlagsZAndS8(*(mem + a->disp));
                 }
                 else
                 {
@@ -164,19 +375,19 @@ int logicRegMemToEither(uint8_t* text, int curr, int id)
                 if (a->id == 9 && interpret)
                 {
                     if (id == 0)
-                        *((uint16_t*)(&mem[*getRegister16(0x04)])) &= *getRegister16(reg);
+                        *((uint16_t*)(mem + a->disp)) &= *getRegister16(reg);
                     //fprintf(stderr, "and ");
                     else if (id == 1)
-                        *((uint16_t*)(&mem[*getRegister16(0x04)])) |= *getRegister16(reg);
+                        *((uint16_t*)(mem + a->disp)) |= *getRegister16(reg);
                     //fprintf(stderr, "or ");
                     else if (id == 2)
-                        *((uint16_t*)(&mem[*getRegister16(0x04)])) ^= *getRegister16(reg);
+                        *((uint16_t*)(mem + a->disp)) ^= *getRegister16(reg);
                     //fprintf(stderr, "xor ");
                 //else
 
                     //fprintf(stderr, "test ");
 
-                    setFlagsZAndS16((uint16_t)(mem[*getRegister16(0x04)]));
+                    setFlagsZAndS16(*((uint16_t*)(mem + a->disp)));
                 }
                 else
                 {
@@ -200,13 +411,13 @@ int logicRegMemToEither(uint8_t* text, int curr, int id)
                 if (a->id == 9 && interpret)
                 {
                     if (id == 0)
-                        *getRegister8(reg) &= mem[*getRegister16(0x04)];
+                        *getRegister8(reg) &= *(mem + a->disp);
                     //fprintf(stderr, "and ");
                     else if (id == 1)
-                        *getRegister8(reg) |= mem[*getRegister16(0x04)];
+                        *getRegister8(reg) |= *(mem + a->disp);
                     //fprintf(stderr, "or ");
                     else if (id == 2)
-                        *getRegister8(reg) ^= mem[*getRegister16(0x04)];
+                        *getRegister8(reg) ^= *(mem + a->disp);
                     //fprintf(stderr, "xor ");
                 //else
 
@@ -232,13 +443,13 @@ int logicRegMemToEither(uint8_t* text, int curr, int id)
                 if (a->id == 9 && interpret)
                 {
                     if (id == 0)
-                        *getRegister16(reg) &= (uint16_t)(mem[*getRegister16(0x04)]);
+                        *getRegister16(reg) &= *((uint16_t*)(mem + a->disp));
                     //fprintf(stderr, "and ");
                     else if (id == 1)
-                        *getRegister16(reg) |= (uint16_t)(mem[*getRegister16(0x04)]);
+                        *getRegister16(reg) |= *((uint16_t*)(mem + a->disp));
                     //fprintf(stderr, "or ");
                     else if (id == 2)
-                        *getRegister16(reg) ^= (uint16_t)(mem[*getRegister16(0x04)]);
+                        *getRegister16(reg) ^= *((uint16_t*)(mem + a->disp));
                     //fprintf(stderr, "xor ");
                 //else
 

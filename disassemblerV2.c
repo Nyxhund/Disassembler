@@ -847,6 +847,7 @@ int main(int argc, char** argv)
     a = fread(text, header->a_text, 1, file);
 
     mem = malloc(0xffff);
+    memset(mem, 0, 0xffff);
     a = fread(mem, header->a_data, 1, file);
     
     int curr = 0;

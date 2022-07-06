@@ -174,7 +174,7 @@ int immediateToRegMem(uint8_t* text, int curr, uint8_t word)
             if (word == 0x00)
                 mem[a->disp] = (uint8_t)data;
             else
-                mem[a->disp] = data;
+                *((uint16_t*)(mem + a->disp)) = data;
         }
         else
         {

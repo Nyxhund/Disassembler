@@ -379,6 +379,7 @@ int immediateAddRegMem(uint8_t* text, int curr)
                 else if (id == 0x05 || id == 0x07) // SUB AND CMP ---> sub id == 5
                 {
                     cmpOAC8(*(mem + a->disp), (uint8_t)data);
+
                     if (id == 0x05)
                     {
                         *(mem + a->disp) -= (uint8_t)data;
@@ -390,6 +391,20 @@ int immediateAddRegMem(uint8_t* text, int curr)
                 else if (id == 0x04) // AND
                 {
                     *(mem + a->disp) &= (uint8_t) data;
+                    setFlagsZAndS8(*(mem + a->disp));
+                    cpu->O = 0;
+                    cpu->C = 0;
+                }
+                else if (id == 0x01) // OR
+                {
+                    *(mem + a->disp) |= (uint8_t) data;
+                    setFlagsZAndS8(*(mem + a->disp));
+                    cpu->O = 0;
+                    cpu->C = 0;
+                }
+                else if (id == 0x06) // XOR
+                {
+                    *(mem + a->disp) ^= (uint8_t)data;
                     setFlagsZAndS8(*(mem + a->disp));
                     cpu->O = 0;
                     cpu->C = 0;
@@ -417,6 +432,20 @@ int immediateAddRegMem(uint8_t* text, int curr)
                 else if (id == 0x04) // AND
                 {
                     *getRegister8(a->id) &= (uint8_t)data;
+                    setFlagsZAndS8(*getRegister8(a->id));
+                    cpu->O = 0;
+                    cpu->C = 0;
+                }
+                else if (id == 0x01) // OR
+                {
+                    *getRegister8(a->id) |= (uint8_t)data;
+                    setFlagsZAndS8(*getRegister8(a->id));
+                    cpu->O = 0;
+                    cpu->C = 0;
+                }
+                else if (id == 0x06) // XOR
+                {
+                    *getRegister8(a->id) ^= (uint8_t)data;
                     setFlagsZAndS8(*getRegister8(a->id));
                     cpu->O = 0;
                     cpu->C = 0;
@@ -451,6 +480,20 @@ int immediateAddRegMem(uint8_t* text, int curr)
                     cpu->O = 0;
                     cpu->C = 0;
                 }
+                else if (id == 0x01) // OR
+                {
+                    *((uint16_t*)(mem + a->disp)) |= data;
+                    setFlagsZAndS16(*((uint16_t*)(mem + a->disp)));
+                    cpu->O = 0;
+                    cpu->C = 0;
+                }
+                else if (id == 0x06) // XOR
+                {
+                    *((uint16_t*)(mem + a->disp)) ^= data;
+                    setFlagsZAndS16(*((uint16_t*)(mem + a->disp)));
+                    cpu->O = 0;
+                    cpu->C = 0;
+                }
             }
             else
             {
@@ -476,6 +519,20 @@ int immediateAddRegMem(uint8_t* text, int curr)
                     cpu->O = 0;
                     cpu->C = 0;
                     setRegister16(a->id, *getRegister16(a->id) &= data);
+                    setFlagsZAndS16(*getRegister16(a->id));
+                }
+                else if (id == 0x01) // OR
+                {
+                    cpu->O = 0;
+                    cpu->C = 0;
+                    setRegister16(a->id, *getRegister16(a->id) |= data);
+                    setFlagsZAndS16(*getRegister16(a->id));
+                }
+                else if (id == 0x06) // XOR
+                {
+                    cpu->O = 0;
+                    cpu->C = 0;
+                    setRegister16(a->id, *getRegister16(a->id) |= data);
                     setFlagsZAndS16(*getRegister16(a->id));
                 }
             }
@@ -526,6 +583,74 @@ int immediateToAccu(uint8_t* text, int curr, int id)
         fprintf(stderr, "%s, %x\n", regByte[0], data);
     else
         fprintf(stderr, "%s, %04x\n", regWord[0], data);
+
+
+    if (word == 0x00)
+    {
+        switch (id) {
+            case 0: // ADD
+                addOAC8(*getRegister8(0x00), (uint8_t)data);
+                *getRegister8(0x00) += (uint8_t)data;
+                setFlagsZAndS8(*getRegister8(0x00));
+                break;
+        
+            /*case 1:
+
+                break;
+            case 2:
+
+                break;*/
+            case 3:
+                cmpOAC8(*getRegister8(0x00), (uint8_t)data);
+                setFlagsZAndS16(*getRegister8(0x00) - data);
+                break;
+            /*case 4:
+
+                break;
+            case 5:
+
+                break;
+            case 6:
+
+                break;
+            case 7:
+
+                break;*/
+            }
+    }
+    else
+    {
+        switch(id){
+            case 0: // ADD
+                addOAC8(*getRegister8(0x00), (uint8_t)data);
+                *getRegister8(0x00) += (uint8_t)data;
+                setFlagsZAndS8(*getRegister8(0x00));
+                break;
+
+                /*case 1:
+
+                    break;
+                case 2:
+
+                    break;*/
+            case 3:
+                cmpOAC8(*getRegister8(0x00), (uint8_t)data);
+                setFlagsZAndS16(*getRegister8(0x00) - data);
+                break;
+                /*case 4:
+
+                    break;
+                case 5:
+
+                    break;
+                case 6:
+
+                    break;
+                case 7:
+
+                    break;*/
+        }
+    }
 
     return read;
 }
@@ -590,7 +715,13 @@ int incRegMem(uint8_t* text, int curr) // e3 = 11 10 0 011  227 192 35
                     *(mem + a->disp) -= 1;
                     setFlagsZAndS8(*(mem + a->disp));
                 }
-                //else if (id == 0x02 || 0x03)
+                else if (id == 0x02 || 0x03)
+                {
+                    setRegister16(0x04, *getRegister16(0x04) - 2);
+                    *((uint16_t*)(mem + *getRegister16(0x04))) = (uint16_t)curr;
+                    if (interpret)
+                        read = *(mem + a->disp) - curr;
+                }
                     //fprintf(stderr, "call ");
                 //else if (id == 0x04 || id == 0x05)
                     //fprintf(stderr, "jmp ");
@@ -609,8 +740,13 @@ int incRegMem(uint8_t* text, int curr) // e3 = 11 10 0 011  227 192 35
                     setRegister8(a->id, *getRegister8(a->id) - 1);
                     setFlagsZAndS8(*getRegister8(a->id));
                 }
-                //else if (id == 0x02 || 0x03)
-                    //fprintf(stderr, "call ");
+                else if (id == 0x02 || 0x03) // CALL
+                {
+                    setRegister16(0x04, *getRegister16(0x04) - 2);
+                    *((uint16_t*)(mem + *getRegister16(0x04))) = (uint16_t) curr;
+                    if (interpret)
+                        read = *getRegister8(a->id) - curr;
+                }
                 //else if (id == 0x04 || id == 0x05)
                     //fprintf(stderr, "jmp ");
             }
@@ -631,7 +767,13 @@ int incRegMem(uint8_t* text, int curr) // e3 = 11 10 0 011  227 192 35
                     *((uint16_t*)(mem + a->disp)) -= 1;
                     setFlagsZAndS16(*((uint16_t*)(mem + a->disp)));
                 }
-                //else if (id == 0x02 || 0x03)
+                else if (id == 0x02 || 0x03)
+                {
+                    setRegister16(0x04, *getRegister16(0x04) - 2);
+                    *((uint16_t*)(mem + *getRegister16(0x04))) = (uint16_t)curr;
+                    if (interpret)
+                        read = *((uint16_t*)(mem + a->disp)) - curr;
+                }
                     //fprintf(stderr, "call ");
                 //else if (id == 0x04 || id == 0x05)
                     //fprintf(stderr, "jmp ");
@@ -650,7 +792,13 @@ int incRegMem(uint8_t* text, int curr) // e3 = 11 10 0 011  227 192 35
                     setRegister16(a->id, *getRegister16(a->id) - 1);
                     setFlagsZAndS16(*getRegister16(a->id));
                 }
-                //else if (id == 0x02 || 0x03)
+                else if (id == 0x02 || 0x03) // CALL
+                {
+                    setRegister16(0x04, *getRegister16(0x04) - 2);
+                    *((uint16_t*)(mem + *getRegister16(0x04))) = (uint16_t)curr;
+                    if (interpret)
+                        read = *getRegister16(a->id) - curr;
+                }
                         //fprintf(stderr, "call ");
                 //else if (id == 0x04 || id == 0x05)
                         //fprintf(stderr, "jmp ");

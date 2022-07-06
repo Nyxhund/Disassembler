@@ -36,6 +36,25 @@ void syscall()
 			setRegister16(0x00, 0x00);
 			m->m_type = -errno;
 			break;
+
+		case 17:
+			setRegister16(0x00, 0x00);
+
+			uint16_t addr = *((uint16_t*)(mem + *getRegister16(0x03) + 10));
+			fprintf(stderr, "<brk(0x%04x) => ", addr);
+
+			if (/*addr < 0xffff || */ (addr >= ((*getRegister16(0x04) & ~0x3ff) - 0x400))) {
+				errno = ENOMEM;
+				if (interpret) fprintf(stderr, "ENOMEM>\n");
+				m->m_type = -errno;
+			}
+			else {
+				uint16_t brksize = addr;
+				if (interpret) fprintf(stderr, "0>\n");
+				m->m_type = 0;
+				*((uint16_t*)(mem + *getRegister16(0x03) + 18)) = brksize;
+			}
+			break;
 	}
 }
 

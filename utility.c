@@ -78,13 +78,10 @@ struct pair* getRmAddress(uint8_t rm, uint8_t mod, uint16_t disp, uint8_t word)
                 break;
         }
 
-        if(mod == 0x01)
-        {
-            if(disp >= 0x8000)
-                a->disp -= ~disp + 1;
-            else
-                a->disp += disp;
-        }
+        if (mod == 0x01 && disp >= 0x8000)
+            a->disp -= ~disp + 1;
+        else
+            a->disp += disp;
     }
 
     return a;

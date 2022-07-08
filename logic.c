@@ -108,15 +108,15 @@ int shifts(uint8_t* text, int curr) // D (0->3)
                         *(mem + a->disp) >>= rot;
                         break;
 
-                    case 0x04:
+                    case 0x04: // SHL
                         *(mem + a->disp) <<= rot;
                         cpu->C = *(mem + a->disp) % 2;
-                        *(mem + a->disp) &= 0x00;
+                        //*(mem + a->disp) &= 0x00;
                         break;
                     case 0x05:
-                        cpu->C = *(mem + a->disp) % 2;
-                        *(mem + a->disp) &= 0x00;
+                        //*(mem + a->disp) &= 0x00;
                         *(mem + a->disp) >>= rot;
+                        cpu->C = *(mem + a->disp) / 64;
                         break;
                     case 0x07:
                         *(mem + a->disp) >>= rot;
@@ -155,15 +155,15 @@ int shifts(uint8_t* text, int curr) // D (0->3)
                     *getRegister8(a->id) >>= rot;
                     break;
 
-                case 0x04:
+                case 0x04: // SHL
                     setRegister8(a->id, *getRegister8(a->id) << rot);
                     cpu->C = *getRegister8(a->id) % 2;
-                    *getRegister8(a->id) &= 0x00;
+                    //*getRegister8(a->id) &= 0x00;
                     break;
-                case 0x05:
-                    cpu->C = *getRegister8(a->id) % 2;
-                    *getRegister8(a->id) &= 0x00;
+                case 0x05: // SHR
+                    //*getRegister8(a->id) &= 0x00;
                     setRegister8(a->id, *getRegister8(a->id) >> rot);
+                    cpu->C = *getRegister8(a->id) / 64;
                     break;
                 case 0x07:
                     *getRegister8(a->id) >>= rot;
@@ -208,12 +208,12 @@ int shifts(uint8_t* text, int curr) // D (0->3)
                 case 0x04: // SHL
                     *((uint16_t*)(mem + a->disp)) <<= rot;
                     cpu->C = *((uint16_t*)(mem + a->disp)) % 2;
-                    *((uint16_t*)(mem + a->disp)) &= 0x00;
+                    //*((uint16_t*)(mem + a->disp)) &= 0x00;
                     break;
                 case 0x05: // SHR
-                    cpu->C = *((uint16_t*)(mem + a->disp)) % 2;
-                    *((uint16_t*)(mem + a->disp)) &= 0x00;
+                    //*((uint16_t*)(mem + a->disp)) &= 0x00;
                     *((uint16_t*)(mem + a->disp)) >>= rot;
+                    cpu->C = *((uint16_t*)(mem + a->disp)) % 64;
                     break;
                 case 0x07: // SAR
                     *((uint16_t*)(mem + a->disp)) >>= rot;
@@ -225,48 +225,49 @@ int shifts(uint8_t* text, int curr) // D (0->3)
             {
                 switch (id)
                 {
-                case 0x00: // ROL
-                    *getRegister16(a->id) <<= rot;
-                    break;
-                case 0x01: // ROR
-                    *getRegister16(a->id) >>= rot;
-                    break;
+                    case 0x00: // ROL
+                        *getRegister16(a->id) <<= rot;
+                        break;
+                    case 0x01: // ROR
+                        *getRegister16(a->id) >>= rot;
+                        break;
 
-                case 0x02: // RCL
-                    *getRegister16(a->id) <<= rot;
-                    tmp = cpu->C;
-                    cpu->C = *getRegister16(a->id) % 2;
-                    if (tmp)
-                        *getRegister16(a->id) |= 0x01;
-                    else
-                        *getRegister16(a->id) &= 0x00;
-                    break;
+                    case 0x02: // RCL
+                        *getRegister16(a->id) <<= rot;
+                        tmp = cpu->C;
+                        cpu->C = *getRegister16(a->id) % 2;
+                        if (tmp)
+                            *getRegister16(a->id) |= 0x01;
+                        else
+                            *getRegister16(a->id) &= 0x00;
+                        break;
 
-                case 0x03: // RCR
-                    tmp = cpu->C;
-                    cpu->C = *getRegister16(a->id) % 2;
-                    if (tmp)
-                        *getRegister16(a->id) |= 0x01;
-                    else
-                        *getRegister16(a->id) &= 0x00;
-                    *getRegister16(a->id) >>= rot;
-                    break;
+                    case 0x03: // RCR
+                        tmp = cpu->C;
+                        cpu->C = *getRegister16(a->id) % 2;
+                        if (tmp)
+                            *getRegister16(a->id) |= 0x01;
+                        else
+                            *getRegister16(a->id) &= 0x00;
+                        *getRegister16(a->id) >>= rot;
+                        break;
 
-                case 0x04:
-                    setRegister16(a->id, *getRegister16(a->id) << rot);
-                    cpu->C = *getRegister16(a->id) % 2;
-                    *getRegister16(a->id) &= 0x00;
-                    break;
-                case 0x05:
-                    cpu->C = *getRegister16(a->id) % 2;
-                    *getRegister16(a->id) &= 0x00;
-                    setRegister16(a->id, *getRegister16(a->id) >> rot);
-                    break;
-                case 0x07:
-                    *getRegister16(a->id) >>= rot;
-                    break;
+                    case 0x04: // SHL
+                        setRegister16(a->id, *getRegister16(a->id) << rot);
+                        cpu->C = *getRegister16(a->id) % 2;
+                        //*getRegister16(a->id) &= 0x00;
+                        break;
+                    case 0x05: // SHR
+                        
+                        //*getRegister16(a->id) &= 0x00;
+                        setRegister16(a->id, *getRegister16(a->id) >> rot);
+                        cpu->C = *getRegister16(a->id) / 64;
+                        break;
+                    case 0x07:
+                        *getRegister16(a->id) >>= rot;
+                        break;
                 }
-                setFlagsZAndS8(*getRegister16(a->id));
+                setFlagsZAndS16(*getRegister16(a->id));
             }
         }
     }

@@ -478,6 +478,13 @@ int xchgRegAccu(uint8_t* text, int curr)
     uint8_t reg = text[curr] % 8;
     printReadBytes(1, text, curr);
     fprintf(stderr, "xchg %s, %s\n", regWord[reg], regWord[0]);
+
+    if(interpret)
+    {
+        uint16_t tmp = *getRegister16(0x00);
+        setRegister16(0x00, *getRegister16(reg));
+        setRegister16(reg, tmp);
+    }
     return 1;
 }
 

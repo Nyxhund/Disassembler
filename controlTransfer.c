@@ -36,7 +36,7 @@ int controlDirect(uint8_t* text, int curr, int id)
         if (id == 0)
         {
             setRegister16(0x04, *getRegister16(0x04) - 2);
-            *((uint16_t*)(mem + *getRegister16(0x04))) = (uint16_t)curr;
+            *((uint16_t*)(mem + *getRegister16(0x04))) = (uint16_t) curr + 3;
             read = disp + 0x03;
         }
         else if (id == 1)
@@ -45,12 +45,11 @@ int controlDirect(uint8_t* text, int curr, int id)
             read = 3;
         else if (id == 3)
         {
-            /*
-            read = *((uint16_t*)(mem + *getRegister16(0x04))) + 0x03 - curr;
-            fprintf(stderr, "%04x\n", read);
-            setRegister16(0x04, *getRegister16(0x04) + 2);
             
-            if(!interpret)*/
+            read = *((uint16_t*)(mem + *getRegister16(0x04))) - curr;
+            setRegister16(0x04, *getRegister16(0x04) + 2 + disp);
+            
+            if(!interpret)
                 read = 3;
         }
     }
@@ -126,7 +125,7 @@ int controlSimpleCommands(uint8_t* text, int curr, int id)
         {
         case 0:
             //fprintf(stderr, "ret\n");
-            read = *((uint16_t*)(mem + *getRegister16(0x04))) + 0x03 - curr;
+            read = *((uint16_t*)(mem + *getRegister16(0x04))) - curr;
             setRegister16(0x04, *getRegister16(0x04) + 2);
             break;
         case 1:

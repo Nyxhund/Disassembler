@@ -812,25 +812,112 @@ int interpret;
 struct CPU *cpu;
 uint8_t *mem;
 
+void processArgs(char** argv, uint16_t argc)
+{
+    const char* env = "PATH=/usr:/usr/bin/";
+    uint16_t* addr = malloc(argc * sizeof(uint16_t));
+    int position = 0;
+    uint16_t len = strlen(env);
+    uint16_t env_head;
+    len++;
+
+    for(int i = 0; i < argc; ++i)
+    {
+        len += strlen(argv[i]);
+        len++;
+    }
+
+    if(len % 2)
+    {
+        setRegister16(0x04, *getRegister16(0x04) - 1);
+        *(mem + *getRegister16(0x04)) = 0x00;
+    }
+
+    setRegister16(0x04, *getRegister16(0x04) - 1);
+    //printf(" SP = %x \n", *getRegister16(0x04));
+    *(mem + *getRegister16(0x04)) = '\0';
+    
+    for(int i = strlen(env) - 1; i >= 0; --i)
+    {
+        //printf(" i=%x ", i);
+        setRegister16(0x04, *getRegister16(0x04) - 1);
+        *(mem + *getRegister16(0x04)) = env[i];
+        //data_mem[--SP] = env.at(i);
+    }
+    env_head = *getRegister16(0x04);
+
+
+    for (int i = argc - 1; i >= 0; --i)
+    {
+        const char *arg = argv[i]; //.c_str();
+        setRegister16(0x04, *getRegister16(0x04) - 1);
+        *(mem + *getRegister16(0x04)) = '\0';
+
+        for (int j = strlen(argv[i]) - 1; j >= 0; --j)
+        {
+            setRegister16(0x04, *getRegister16(0x04) - 1);
+            *(mem + *getRegister16(0x04)) = arg[j];
+            //data_mem[--SP] = arg[j];
+        }
+        //addr.push_back(SP);
+        addr[position] = *getRegister16(0x04);
+        position++;
+    }
+
+    setRegister16(0x04, *getRegister16(0x04) - 1);
+    *(mem + *getRegister16(0x04)) = 0x00;
+    setRegister16(0x04, *getRegister16(0x04) - 1);
+    *(mem + *getRegister16(0x04)) = 0x00;
+    
+    setRegister16(0x04, *getRegister16(0x04) - 1);
+    *(mem + *getRegister16(0x04)) = env_head >> 8;
+    setRegister16(0x04, *getRegister16(0x04) - 1);
+    *(mem + *getRegister16(0x04)) = env_head;
+
+    setRegister16(0x04, *getRegister16(0x04) - 1);
+    *(mem + *getRegister16(0x04)) = 0x00;
+    setRegister16(0x04, *getRegister16(0x04) - 1);
+    *(mem + *getRegister16(0x04)) = 0x00;
+
+    for (int i = 0; i < position; ++i)
+    {
+        //data_mem[--SP] = addr[i] >> 8;
+        //data_mem[--SP] = addr[i];
+        setRegister16(0x04, *getRegister16(0x04) - 1);
+    *(mem + *getRegister16(0x04)) = addr[i] >> 8;
+    setRegister16(0x04, *getRegister16(0x04) - 1);
+    *(mem + *getRegister16(0x04)) = addr[i];
+    }
+
+    //data_mem[--SP] = args_size >> 8;
+    //data_mem[--SP] = args_size;
+    setRegister16(0x04, *getRegister16(0x04) - 1);
+    *(mem + *getRegister16(0x04)) = argc >> 8;
+    setRegister16(0x04, *getRegister16(0x04) - 1);
+    *(mem + *getRegister16(0x04)) = argc;
+
+    free(addr);
+}
+
 int main(int argc, char** argv)
 {
-    if(argc != 3)
+    if(argc < 3)
     {
-        fprintf(stderr, "Wrong input: please enter a path to a binary executable and a mode to execute.");
+        fprintf(stderr, "Wrong input: please enter a path to a binary executable and a mode to execute.\n");
         return 1;
     }
     
-    if(strcmp(argv[2], "-d") == 0)
+    if(strcmp(argv[1], "-d") == 0)
         interpret = 0;
-    else if (strcmp(argv[2], "-m") == 0)
+    else if (strcmp(argv[1], "-m") == 0)
         interpret = 1;
     else
     {
-        fprintf(stderr, "Wrong input: please enter a correct mode of execution.");
+        fprintf(stderr, "Wrong input: please enter a correct mode of execution.\n");
         return 1;
     }
 
-    FILE* file = fopen(argv[1], "rb");
+    FILE* file = fopen(argv[2], "rb");
 
     if(!file)
         return 1;
@@ -846,19 +933,22 @@ int main(int argc, char** argv)
     uint8_t* text = malloc(header->a_text);
     a = fread(text, header->a_text, 1, file);
 
-    mem = malloc(0xffff);
-    memset(mem, 0, 0xffff);
+    mem = malloc(0x10000);
+    memset(mem, 0, 0x10000);
     a = fread(mem, header->a_data, 1, file);
     
     int curr = 0;
 
     cpu = malloc(sizeof(struct CPU));
     memset(cpu, 0, sizeof(struct CPU));
+
+    processArgs(argv + 2, argc - 2);
+    /*
     cpu->registers[4] = 0xffdc;
     mem[0xffdc] = 0x01;
     mem[0xffde] = 0xe6;
     mem[0xffdf] = 0xff;
-
+    */
     if(interpret)
         fprintf(stderr, " AX   BX   CX   DX   SP   BP   SI   DI  FLAGS IP\n");
     

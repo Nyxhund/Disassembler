@@ -227,7 +227,7 @@ int regMemAddReg(uint8_t* text, int curr, int id)
                     }
                     else // SUB AND CMP ---> sub id == 2
                     {
-                        cmpOAC8(*getRegister16(reg), *((uint16_t*)(mem + a->disp)));
+                        cmpOAC16(*getRegister16(reg), *((uint16_t*)(mem + a->disp)));
                         if (id == 2)
                         {
                             *getRegister16(reg) -= *((uint16_t*)(mem + a->disp));

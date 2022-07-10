@@ -341,56 +341,26 @@ int pushPopRegMem(uint8_t* text, int curr, int pop)
 
     printRm(rm, mod, disp, word, 0x00);
     if (a->id == 9 && interpret)
-        printMemoryChange(a->disp, word);
+        printMemoryChange(a->disp, 0x01);
     fprintf(stderr, "\n");
 
     if (interpret)
     {
         if (pop == 0) // PUSH
         {
-            if (word == 0x00)
-            {
-                setRegister16(0x04, *getRegister16(0x04) - 1);
-                if (a->id == 9 && interpret)
-                    mem[*getRegister16(0x04)] = mem[a->disp];
-                else
-                    mem[*getRegister16(0x04)] = *getRegister8(a->id);
-            }
+            setRegister16(0x04, *getRegister16(0x04) - 2);
+            if (a->id == 9 && interpret)
+                *((uint16_t*)(mem + *getRegister16(0x04))) = *((uint16_t*)(mem + a->disp));
             else
-            {
-                setRegister16(0x04, *getRegister16(0x04) - 2);
-                if (a->id == 9 && interpret)
-                {
-                    mem[*getRegister16(0x04)] = mem[a->disp];
-                    mem[*getRegister16(0x04) + 1] = mem[a->disp + 1];
-                }
-                else
-                    mem[*getRegister16(0x04)] = *getRegister16(a->id);
-            }
+                *((uint16_t*)(mem + *getRegister16(0x04))) = *getRegister16(a->id);
         }
         else
         {
-            if (word == 0x00)
-            {
-                if (a->id == 9 && interpret)
-                    mem[a->disp] = mem[*getRegister16(0x04)];
-                else
-                    setRegister8(a->id, mem[*getRegister16(0x04)]);
-
-                setRegister16(0x04, *getRegister16(0x04) + 1);
-            }
+            if (a->id == 9 && interpret)
+                *((uint16_t*)(mem + a->disp)) = *((uint16_t*)(mem + *getRegister16(0x04)));
             else
-            {
-                if (a->id == 9 && interpret)
-                {
-                    mem[a->disp] = mem[*getRegister16(0x04)];
-                    mem[a->disp + 1] = mem[*getRegister16(0x04) + 1];
-                }
-                else
-                    setRegister16(a->id, *((uint16_t*)(mem + *getRegister16(0x04))));
-
-                setRegister16(0x04, *getRegister16(0x04) + 2);
-            }
+                setRegister16(a->id, *((uint16_t*)(mem + *getRegister16(0x04))));
+            setRegister16(0x04, *getRegister16(0x04) + 2);
         }
     }
 

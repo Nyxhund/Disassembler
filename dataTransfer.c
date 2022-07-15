@@ -34,7 +34,6 @@ int RegMemtofromReg(uint8_t* text, int curr, uint8_t dir, uint8_t word)
         read = 2;
     }
     
-
     struct pair *a = getRmAddress(rm, mod, disp, word);
     printReadBytes(read, text, curr);
     fprintf(stderr, "mov ");
@@ -64,7 +63,7 @@ int RegMemtofromReg(uint8_t* text, int curr, uint8_t dir, uint8_t word)
 
     if (interpret)
     {
-        if (dir == 0x00) // INTERPRETOR
+        if (dir == 0x00)
         {
             if (a->id == 0x09)
             {
@@ -80,7 +79,6 @@ int RegMemtofromReg(uint8_t* text, int curr, uint8_t dir, uint8_t word)
                 else
                     setRegister16(a->id, *getRegister16(reg));
             }
-
         }
         else
         {
@@ -169,7 +167,7 @@ int immediateToRegMem(uint8_t* text, int curr, uint8_t word)
 
     if (interpret)
     {
-        if (a->id == 9) // INTERPRETER
+        if (a->id == 9)
         {
             if (word == 0x00)
                 mem[a->disp] = (uint8_t)data;
@@ -216,27 +214,11 @@ void immediateToRegister(uint8_t* text, int curr)
     }
 }
 
-int memoryToFromAccu(uint8_t* text, int curr, uint8_t word, uint8_t dir) // I DONT KNOW REALLY??
+int memoryToFromAccu(uint8_t* text, int curr, uint8_t word, uint8_t dir)
 {
+    // Never tested, function does not appear in 1-6.c files, so I'm not sure about the format of the print / functionning of the function
     int read;
     read = 3;
-    /*
-    if (dir == 0x00)
-    {
-        if (word == 0x00)
-            //setRegister8(0x00, )
-            //fprintf(stderr, "%s, %02x -> %02x\n", regByte[0], text[curr + 1], text[curr + 2]);
-        else
-            //fprintf(stderr, "%s, %02x -> %02x\n", regWord[0], text[curr + 1], text[curr + 2]);
-    }
-    else
-    {
-        if (word == 0x00)
-            //fprintf(stderr, "%02x -> %02x, %s\n", text[curr + 1], text[curr + 2], regByte[0]);
-        else
-            //fprintf(stderr, "%02x -> %02x, %s\n", text[curr + 1], text[curr + 2], regWord[0]);
-    }*/
-
     printReadBytes(3, text, curr);
     fprintf(stderr, "mov ");
     
@@ -258,8 +240,9 @@ int memoryToFromAccu(uint8_t* text, int curr, uint8_t word, uint8_t dir) // I DO
     return read;
 }
 
-int regMemToFromSeg(uint8_t* text, int curr, uint8_t dir) // NOT TO DO ?? We'll see
-{
+int regMemToFromSeg(uint8_t* text, int curr, uint8_t dir)
+{   
+    // Never tested, function does not appear in 1-6.c files, so I'm not sure about the format of the print / functionning of the function
     uint8_t mod = text[curr+1] / 64; 
     uint8_t rm = text[curr+1] % 8;
     uint8_t reg = (text[curr+1] % 16) / 8;
@@ -395,6 +378,7 @@ int pushPopReg(uint8_t* text, int curr, int pop)
 
 int pushPopSeg(uint8_t* text, int curr, int pop)
 {
+    // Never tested, function does not appear in 1-6.c files, so I'm not sure about the format of the print / functionning of the function
     uint8_t reg = (text[curr] % 16) / 8;
     printReadBytes(1, text, curr);
     if(pop == 0)
@@ -406,6 +390,7 @@ int pushPopSeg(uint8_t* text, int curr, int pop)
 
 int xchgRegMemWReg(uint8_t* text, int curr)
 {
+    // Never tested, function does not appear in 1-6.c files, so I'm not sure about the format of the print / functionning of the function
     uint8_t reg = (text[curr+1] % 64) / 8;
     uint8_t mod = text[curr+1] / 64;
     uint8_t rm = text[curr+1] % 8;
@@ -458,10 +443,9 @@ int xchgRegAccu(uint8_t* text, int curr)
     return 1;
 }
 
-// NOT SURE ABOUT THE FORMAT
-
 int inOutFromTo(uint8_t* text, int curr, int port, int out)
 {
+    // Never tested, function does not appear in 1-6.c files, so I'm not sure about the format of the print / functionning of the function
     uint8_t word = text[curr] % 2;
     int read = 1;
 
@@ -496,8 +480,6 @@ int inOutFromTo(uint8_t* text, int curr, int port, int out)
     fprintf(stderr, "\n");
     return read;
 }
-
-// XLAT NOT DONE
 
 int leaLdsLes(uint8_t* text, int curr, int id)
 {
@@ -546,19 +528,17 @@ int leaLdsLes(uint8_t* text, int curr, int id)
     {
         if (word == 0x00)
         {
-            if (id == 0)
+            if (id == 0) // LEA
                 setRegister16(reg, a->disp);
-            //fprintf(stderr, "lea ");
-        //else if (id == 1)
-            //fprintf(stderr, "lds ");
-        //else
-            //fprintf(stderr, "les ");
+            //else if (id == 1)
+                //fprintf(stderr, "lds ");
+            //else
+                //fprintf(stderr, "les ");
         }
         else
         {
-            if (id == 0)
+            if (id == 0) // LEA
                 setRegister16(reg, a->disp);
-            //fprintf(stderr, "lea ");
             //else if (id == 1)
                 //fprintf(stderr, "lds ");
             //else

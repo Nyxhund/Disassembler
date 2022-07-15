@@ -15,7 +15,7 @@
 #include "utility.h"
 #include "controlTransfer.h"
 
-int printInfo(uint8_t* text, int curr, int max)
+int processOPCode(uint8_t* text, int curr, int max)
 {
     int read;
     uint8_t tmp;
@@ -31,7 +31,6 @@ int printInfo(uint8_t* text, int curr, int max)
                 read = 1;
             }
             break;
-        
         case 0x01:
             read = regMemAddReg(text, curr, 0);
             break;
@@ -52,7 +51,6 @@ int printInfo(uint8_t* text, int curr, int max)
         case 0x06:
             read = pushPopSeg(text, curr, 0);
             break;
-        
         case 0x07:
             read = pushPopSeg(text, curr, 1);
             break;
@@ -80,7 +78,6 @@ int printInfo(uint8_t* text, int curr, int max)
         case 0x0e:
             read = pushPopSeg(text, curr, 0);
             break;
-        
         case 0x0f:
             read = pushPopSeg(text, curr, 1);
             break;
@@ -108,7 +105,6 @@ int printInfo(uint8_t* text, int curr, int max)
         case 0x16:
             read = pushPopSeg(text, curr, 0);
             break;
-        
         case 0x17:
             read = pushPopSeg(text, curr, 1);
             break;
@@ -129,7 +125,6 @@ int printInfo(uint8_t* text, int curr, int max)
         case 0x1e:
             read = pushPopSeg(text, curr, 0);
             break;
-        
         case 0x1f:
             read = pushPopSeg(text, curr, 1);
             break;
@@ -199,7 +194,6 @@ int printInfo(uint8_t* text, int curr, int max)
         case 0x34:
             read = immediateToAccu(text, curr, 6);
             break;
-
         case 0x35:
             read = immediateToAccu(text, curr, 6);
             break;
@@ -406,21 +400,18 @@ int printInfo(uint8_t* text, int curr, int max)
             break;
 
         case 0x88:
-            read =  RegMemtofromReg(text, curr, 0x00, 0x00);
+            read = RegMemtofromReg(text, curr, 0x00, 0x00);
             break;
-        
         case 0x89:
             read = RegMemtofromReg(text, curr, 0x00, 0x01);
             break;
-        
         case 0x8a:
             read = RegMemtofromReg(text, curr, 0x01, 0x00);
             break;
-    
         case 0x8b:
             read = RegMemtofromReg(text, curr, 0x01, 0x01);
             break;
-        
+
         case 0x8c:
             read = regMemToFromSeg(text, curr, 0x00);
             break;
@@ -476,15 +467,12 @@ int printInfo(uint8_t* text, int curr, int max)
         case 0xa0:
             read = memoryToFromAccu(text, curr, 0x00, 0x00);
             break;
-        
         case 0xa1:
             read = memoryToFromAccu(text, curr, 0x01, 0x00);
             break;
-
         case 0xa2:
             read = memoryToFromAccu(text, curr, 0x00, 0x01);
             break;
-
         case 0xa3:
             read = memoryToFromAccu(text, curr, 0x01, 0x01);
             break;
@@ -505,7 +493,6 @@ int printInfo(uint8_t* text, int curr, int max)
         case 0xa8:
             read = immediateToAccu(text, curr, 7);
             break;
-        
         case 0xa9:
             read = immediateToAccu(text, curr, 7);
             break;
@@ -533,17 +520,14 @@ int printInfo(uint8_t* text, int curr, int max)
             immediateToRegister(text, curr);
             read = 2;
             break;
-
         case 0xb1:
             immediateToRegister(text, curr);
             read =  2;
             break;
-
         case 0xb2:
             immediateToRegister(text, curr);
             read = 2;
             break;
-        
         case 0xb3:
             immediateToRegister(text, curr);
             read = 2;
@@ -608,7 +592,6 @@ int printInfo(uint8_t* text, int curr, int max)
         case 0xc4:
             read = leaLdsLes(text, curr, 2);
             break;
- 
         case 0xc5:
             read = leaLdsLes(text, curr, 1);
             break;
@@ -616,7 +599,6 @@ int printInfo(uint8_t* text, int curr, int max)
         case 0xc6:
             read = immediateToRegMem(text, curr, 0);
             break;
-
         case 0xc7:
             read = immediateToRegMem(text, curr, 1);
             break;
@@ -628,7 +610,6 @@ int printInfo(uint8_t* text, int curr, int max)
         case 0xcb:
             read = controlSimpleCommands(text, curr, 0);
             break;
-        
         case 0xcc:
             read = controlSimpleCommands(text, curr, 1);
             break;
@@ -718,6 +699,7 @@ int printInfo(uint8_t* text, int curr, int max)
         case 0xe9:
             read = controlDirect(text, curr, 1);
             break;
+
         case 0xeb:
             read = jumpShort(text, curr);
             break;
@@ -749,7 +731,6 @@ int printInfo(uint8_t* text, int curr, int max)
         case 0xf4:
             read = controlSimpleCommands(text, curr, 11);
             break;
-        
         case 0xf5:
             read = controlSimpleCommands(text, curr, 5);
             break;
@@ -834,22 +815,19 @@ void processArgs(char** argv, uint16_t argc)
     }
 
     setRegister16(0x04, *getRegister16(0x04) - 1);
-    //printf(" SP = %x \n", *getRegister16(0x04));
     *(mem + *getRegister16(0x04)) = '\0';
     
     for(int i = strlen(env) - 1; i >= 0; --i)
     {
-        //printf(" i=%x ", i);
         setRegister16(0x04, *getRegister16(0x04) - 1);
         *(mem + *getRegister16(0x04)) = env[i];
-        //data_mem[--SP] = env.at(i);
     }
     env_head = *getRegister16(0x04);
 
 
     for (int i = argc - 1; i >= 0; --i)
     {
-        const char *arg = argv[i]; //.c_str();
+        const char *arg = argv[i];
         setRegister16(0x04, *getRegister16(0x04) - 1);
         *(mem + *getRegister16(0x04)) = '\0';
 
@@ -857,9 +835,7 @@ void processArgs(char** argv, uint16_t argc)
         {
             setRegister16(0x04, *getRegister16(0x04) - 1);
             *(mem + *getRegister16(0x04)) = arg[j];
-            //data_mem[--SP] = arg[j];
         }
-        //addr.push_back(SP);
         addr[position] = *getRegister16(0x04);
         position++;
     }
@@ -881,16 +857,13 @@ void processArgs(char** argv, uint16_t argc)
 
     for (int i = 0; i < position; ++i)
     {
-        //data_mem[--SP] = addr[i] >> 8;
-        //data_mem[--SP] = addr[i];
+        
         setRegister16(0x04, *getRegister16(0x04) - 1);
-    *(mem + *getRegister16(0x04)) = addr[i] >> 8;
-    setRegister16(0x04, *getRegister16(0x04) - 1);
-    *(mem + *getRegister16(0x04)) = addr[i];
+        *(mem + *getRegister16(0x04)) = addr[i] >> 8;
+        setRegister16(0x04, *getRegister16(0x04) - 1);
+        *(mem + *getRegister16(0x04)) = addr[i];
     }
 
-    //data_mem[--SP] = args_size >> 8;
-    //data_mem[--SP] = args_size;
     setRegister16(0x04, *getRegister16(0x04) - 1);
     *(mem + *getRegister16(0x04)) = argc >> 8;
     setRegister16(0x04, *getRegister16(0x04) - 1);
@@ -903,7 +876,7 @@ int main(int argc, char** argv)
 {
     if(argc < 3)
     {
-        fprintf(stderr, "Wrong input: please enter a path to a binary executable and a mode to execute.\n");
+        fprintf(stderr, "Wrong input: please enter at least a path to a binary executable and a mode to execute.\n");
         return 1;
     }
     
@@ -913,7 +886,7 @@ int main(int argc, char** argv)
         interpret = 1;
     else
     {
-        fprintf(stderr, "Wrong input: please enter a correct mode of execution.\n");
+        fprintf(stderr, "Wrong input: please enter a correct mode of execution (-d or -m).\n");
         return 1;
     }
 
@@ -943,12 +916,7 @@ int main(int argc, char** argv)
     memset(cpu, 0, sizeof(struct CPU));
 
     processArgs(argv + 2, argc - 2);
-    /*
-    cpu->registers[4] = 0xffdc;
-    mem[0xffdc] = 0x01;
-    mem[0xffde] = 0xe6;
-    mem[0xffdf] = 0xff;
-    */
+
     if(interpret)
         fprintf(stderr, " AX   BX   CX   DX   SP   BP   SI   DI  FLAGS IP\n");
     
@@ -958,7 +926,7 @@ int main(int argc, char** argv)
             fprintf(stderr, "%04x: ", curr);
         else
             printRegisters(curr);
-        curr += printInfo(text, curr, header->a_text);
+        curr += processOPCode(text, curr, header->a_text);
         curr %= 0x10000;
     }
 

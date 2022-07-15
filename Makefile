@@ -4,15 +4,15 @@ CPPFLAGS =
 LDFLAGS =
 LDLIBS =
 
-all: disassembler
+all: nyxvm
 
 SRC = $(shell find ./*.c)
 OBJ = $(SRC:.c=.o)
 
-disassembler: $(OBJ)
+nyxvm: $(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS) $(LDLIBS)
 
 clean:
 	${RM} *.o
 	${RM} *.d
-	${RM} disassembler
+	${RM} nyxvm

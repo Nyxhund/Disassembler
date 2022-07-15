@@ -14,7 +14,7 @@
 
 void syscall()
 {
-	message* m = (mem + *getRegister16(0x03));
+	message* m = (message *) (mem + *getRegister16(0x03));
 	switch (m->m_type)
 	{
 		case 4:

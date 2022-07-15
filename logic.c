@@ -41,30 +41,30 @@ int shifts(uint8_t* text, int curr)
 
     struct pair* a = getRmAddress(rm, mod, disp, w);
     if(id == 0x00)
-        fprintf(stderr, "rol ");
+        fprintf(fd, "rol ");
     else if (id == 0x01)
-        fprintf(stderr, "ror ");
+        fprintf(fd, "ror ");
     else if (id == 0x02)
-        fprintf(stderr, "rcl ");
+        fprintf(fd, "rcl ");
     else if (id == 0x03)
-        fprintf(stderr, "rcr ");
+        fprintf(fd, "rcr ");
     else if (id == 0x04)
-        fprintf(stderr, "shl ");
+        fprintf(fd, "shl ");
     else if (id == 0x05)
-        fprintf(stderr, "shr ");
+        fprintf(fd, "shr ");
     else if (id == 0x07)
-        fprintf(stderr, "sar ");
+        fprintf(fd, "sar ");
 
     printRm(rm, mod, disp, w, 0x00);
     
     if(v == 0x00)
-        fprintf(stderr, ", 1");
+        fprintf(fd, ", 1");
     else
-        fprintf(stderr, ", cl");
+        fprintf(fd, ", cl");
 
     if (a->id == 9 && interpret)
         printMemoryChange(a->disp, w);
-    fprintf(stderr, "\n");
+    fprintf(fd, "\n");
 
     if (interpret)
     {
@@ -320,35 +320,35 @@ int logicRegMemToEither(uint8_t* text, int curr, int id)
     struct pair* a = getRmAddress(rm, mod, disp, word);
     printReadBytes(read, text, curr);
     if (id == 0)
-        fprintf(stderr, "and ");
+        fprintf(fd, "and ");
     else if (id == 1)
-        fprintf(stderr, "or ");
+        fprintf(fd, "or ");
     else if (id == 2)
-        fprintf(stderr, "xor ");
+        fprintf(fd, "xor ");
     else
-        fprintf(stderr, "test ");
+        fprintf(fd, "test ");
 
     if (dir == 0x00)
     {
         printRm(rm, mod, disp, word, 0x00);
 
         if (word == 0x00)
-            fprintf(stderr, ", %s", regByte[reg]);
+            fprintf(fd, ", %s", regByte[reg]);
         else
-            fprintf(stderr, ", %s", regWord[reg]);
+            fprintf(fd, ", %s", regWord[reg]);
     }
     else
     {
         if (word == 0x00)
-            fprintf(stderr, "%s, ", regByte[reg]);
+            fprintf(fd, "%s, ", regByte[reg]);
         else
-            fprintf(stderr, "%s, ", regWord[reg]);
+            fprintf(fd, "%s, ", regWord[reg]);
 
         printRm(rm, mod, disp, word, 0x00);
     }
     if (a->id == 9 && interpret)
         printMemoryChange(a->disp, word);
-    fprintf(stderr, "\n");
+    fprintf(fd, "\n");
 
     if (interpret)
     {
@@ -515,20 +515,20 @@ int logicImmediateToRegMem(uint8_t* text, int curr)
 
     struct pair* a = getRmAddress(rm, mod, disp, w);
     printReadBytes(read, text, curr);
-    fprintf(stderr, "test ");
+    fprintf(fd, "test ");
     if (w == 0x00 && a->id == 9)
-        fprintf(stderr, "byte ");
+        fprintf(fd, "byte ");
 
     printRm(rm, mod, disp, w, 0x00);
 
     if(w == 0x00)
-        fprintf(stderr, ", %x", data);
+        fprintf(fd, ", %x", data);
     else
-        fprintf(stderr, ", %04x", data);
+        fprintf(fd, ", %04x", data);
 
     if (a->id == 9 && interpret)
         printMemoryChange(a->disp, w);
-    fprintf(stderr, "\n");
+    fprintf(fd, "\n");
 
     if (interpret)
     {
@@ -562,38 +562,38 @@ int stringManipulation(uint8_t* text, int curr, int id)
     uint8_t w = text[curr] % 2;
     printReadBytes(2, text, curr);
 
-    fprintf(stderr, "rep ");
+    fprintf(fd, "rep ");
 
     switch (text[curr + 1]) {
     case 0xa4:
-        fprintf(stderr, "movsb\n");
+        fprintf(fd, "movsb\n");
         break;
     case 0xa5:
-        fprintf(stderr, "movsw\n");
+        fprintf(fd, "movsw\n");
         break;
     case 0xa6:
-        fprintf(stderr, "cmpsb\n");
+        fprintf(fd, "cmpsb\n");
         break;
     case 0xa7:
-        fprintf(stderr, "cmpsw\n");
+        fprintf(fd, "cmpsw\n");
         break;
     case 0xae:
-        fprintf(stderr, "scasb\n");
+        fprintf(fd, "scasb\n");
         break;
     case 0xaf:
-        fprintf(stderr, "scasw\n");
+        fprintf(fd, "scasw\n");
         break;
     case 0xac:
-        fprintf(stderr, "lodsb\n");
+        fprintf(fd, "lodsb\n");
         break;
     case 0xad:
-        fprintf(stderr, "lodsw\n");
+        fprintf(fd, "lodsw\n");
         break;
     case 0xaa:
-        fprintf(stderr, "stosb\n");
+        fprintf(fd, "stosb\n");
         break;
     case 0xab:
-        fprintf(stderr, "stosw\n");
+        fprintf(fd, "stosw\n");
         break;
     }
 

@@ -91,61 +91,61 @@ void printRm(uint8_t rm, uint8_t mod, uint16_t disp, uint8_t word, uint8_t seg)
 {
     if(mod == 0x00 && rm == 0x06)
     {
-        fprintf(stderr, "[%04x]", disp); // Check if negative? EA shouldn't be 0
+        fprintf(fd, "[%04x]", disp);
     }
     else if(mod == 0x03)
     {
         if(seg == 0x01)
-            fprintf(stderr, "%s", regSegment[rm]);
+            fprintf(fd, "%s", regSegment[rm]);
         else if(word == 0x00)
-            fprintf(stderr, "%s", regByte[rm]);
+            fprintf(fd, "%s", regByte[rm]);
         else if(word == 0x01)
-            fprintf(stderr, "%s", regWord[rm]);
+            fprintf(fd, "%s", regWord[rm]);
     }
     else
     {
         switch(rm)
         {
             case 0x00:
-                fprintf(stderr, "[bx+si");
+                fprintf(fd, "[bx+si");
                 break;
             case 0x01:
-                fprintf(stderr, "[bx+di");
+                fprintf(fd, "[bx+di");
                 break;
             case 0x02:
-                fprintf(stderr, "[bp+si");
+                fprintf(fd, "[bp+si");
                 break;
             case 0x03:
-                fprintf(stderr, "[bp+di");
+                fprintf(fd, "[bp+di");
                 break;
             case 0x04:
-                fprintf(stderr, "[si");
+                fprintf(fd, "[si");
                 break;
             case 0x05:
-                fprintf(stderr, "[di");
+                fprintf(fd, "[di");
                 break;
             case 0x06:
-                fprintf(stderr, "[bp");
+                fprintf(fd, "[bp");
                 break;
             case 0x07:
-                fprintf(stderr, "[bx");
+                fprintf(fd, "[bx");
                 break;
         }
 
         if(mod == 0x00)
         {
-            fprintf(stderr, "]");
+            fprintf(fd, "]");
         }
         else
         {
             if(disp >= 0x8000)
             {
                 disp = ~disp + 1; // 2's complement
-                fprintf(stderr, "-%x]", disp);
+                fprintf(fd, "-%x]", disp);
             }
             else
             {
-                fprintf(stderr, "+%x]", disp);
+                fprintf(fd, "+%x]", disp);
             }
         }
     }
@@ -156,7 +156,7 @@ void printReadBytes(int read, uint8_t* text, int curr)
 {
     for(int i = 0; i < read; i++)
     {
-        fprintf(stderr, "%02x", text[i + curr]);
+        fprintf(fd, "%02x", text[i + curr]);
     }
 
     int upper;
@@ -167,38 +167,38 @@ void printReadBytes(int read, uint8_t* text, int curr)
     
     for(int i = read; i < upper; i++)
     {
-        fprintf(stderr, "  ");
+        fprintf(fd, "  ");
     }
 
     if (interpret)
-        fprintf(stderr, " ");
+        fprintf(fd, " ");
 }
 
 void printRegisters(int curr)
 {
-    fprintf(stderr, "%04x %04x %04x %04x %04x %04x %04x %04x ", cpu->registers[0], cpu->registers[3], cpu->registers[1], cpu->registers[2], cpu->registers[4], cpu->registers[5], cpu->registers[6], cpu->registers[7]);
+    fprintf(fd, "%04x %04x %04x %04x %04x %04x %04x %04x ", cpu->registers[0], cpu->registers[3], cpu->registers[1], cpu->registers[2], cpu->registers[4], cpu->registers[5], cpu->registers[6], cpu->registers[7]);
     
     if(cpu->O) //  OsZc
-        fprintf(stderr, "O");
+        fprintf(fd, "O");
     else
-        fprintf(stderr, "-");
+        fprintf(fd, "-");
     
     if(cpu->S) //  OsZc
-        fprintf(stderr, "S");
+        fprintf(fd, "S");
     else
-        fprintf(stderr, "-");
+        fprintf(fd, "-");
 
     if(cpu->Z) //  OsZc
-        fprintf(stderr, "Z");
+        fprintf(fd, "Z");
     else
-        fprintf(stderr, "-");
+        fprintf(fd, "-");
 
     if(cpu->C) //  OsZc
-        fprintf(stderr, "C");
+        fprintf(fd, "C");
     else
-        fprintf(stderr, "-");
+        fprintf(fd, "-");
 
-    fprintf(stderr, " %04x:", curr);
+    fprintf(fd, " %04x:", curr);
 }
 
 void setFlagsZAndS8(uint8_t val)
@@ -330,7 +330,7 @@ void cmpO16(uint16_t dest, uint16_t src)
 void printMemoryChange(uint16_t addr, uint8_t w)
 {
     if(w == 0x01)
-        fprintf(stderr, " ;[%04x]%04x", addr, *((uint16_t*)(mem + addr)));
+        fprintf(fd, " ;[%04x]%04x", addr, *((uint16_t*)(mem + addr)));
     else
-        fprintf(stderr, " ;[%04x]%02x", addr, *(mem + addr));
+        fprintf(fd, " ;[%04x]%02x", addr, *(mem + addr));
 }

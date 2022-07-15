@@ -39,39 +39,39 @@ int regMemAddReg(uint8_t* text, int curr, int id)
     struct pair* a = getRmAddress(rm, mod, disp, word);
     printReadBytes(read, text, curr);
     if (id == 0)
-        fprintf(stderr, "add ");
+        fprintf(fd, "add ");
     else if (id == 1)
-        fprintf(stderr, "adc ");
+        fprintf(fd, "adc ");
     else if (id == 2)
-        fprintf(stderr, "sub ");
+        fprintf(fd, "sub ");
     else if (id == 3)
-        fprintf(stderr, "sbb ");
+        fprintf(fd, "sbb ");
     else
-        fprintf(stderr, "cmp ");
+        fprintf(fd, "cmp ");
 
     if (dir == 0x00)
     {
         printRm(rm, mod, disp, word, 0x00);
 
         if (word == 0x00)
-            fprintf(stderr, ", %s", regByte[reg]);
+            fprintf(fd, ", %s", regByte[reg]);
         else
-            fprintf(stderr, ", %s", regWord[reg]);
+            fprintf(fd, ", %s", regWord[reg]);
     }
     else
     {
 
         if (word == 0x00)
-            fprintf(stderr, "%s, ", regByte[reg]);
+            fprintf(fd, "%s, ", regByte[reg]);
         else
-            fprintf(stderr, "%s, ", regWord[reg]);
+            fprintf(fd, "%s, ", regWord[reg]);
 
         printRm(rm, mod, disp, word, 0x00);
     }
 
     if (a->id == 9 && interpret)
         printMemoryChange(a->disp, word);
-    fprintf(stderr, "\n");
+    fprintf(fd, "\n");
 
     if (interpret) {
         if (dir == 0x00)
@@ -311,25 +311,25 @@ int immediateAddRegMem(uint8_t* text, int curr)
     struct pair* a = getRmAddress(rm, mod, disp, sw % 2);
     printReadBytes(read, text, curr);
     if (id == 0x00)
-        fprintf(stderr, "add ");
+        fprintf(fd, "add ");
     else if (id == 0x01)
-        fprintf(stderr, "or ");
+        fprintf(fd, "or ");
     else if (id == 0x02)
-        fprintf(stderr, "adc ");
+        fprintf(fd, "adc ");
     else if (id == 0x03)
-        fprintf(stderr, "sbb ");
+        fprintf(fd, "sbb ");
     else if (id == 0x04)
-        fprintf(stderr, "and ");
+        fprintf(fd, "and ");
     else if (id == 0x05)
-        fprintf(stderr, "sub ");
+        fprintf(fd, "sub ");
     else if (id == 0x06)
-        fprintf(stderr, "xor ");
+        fprintf(fd, "xor ");
     else if (id == 0x07)
-        fprintf(stderr, "cmp ");
+        fprintf(fd, "cmp ");
 
     if (sw == 0x00)
     {
-        fprintf(stderr, "byte ");
+        fprintf(fd, "byte ");
     }
     printRm(rm, mod, disp, sw % 2, 0x00);
 
@@ -337,26 +337,26 @@ int immediateAddRegMem(uint8_t* text, int curr)
     if (sw % 2 == 0x01)
     {
         if (data >= 0x8000 && sw == 0x03)
-            fprintf(stderr, ", -%x", (uint16_t) (~data) + 1);
+            fprintf(fd, ", -%x", (uint16_t) (~data) + 1);
         else
         {
             if ((id == 0x00 && sw == 0x03) || (id == 0x05 && sw == 0x03) || id == 0x03 || (id == 0x07 && sw == 0x03))
-                fprintf(stderr, ", %x", data);
+                fprintf(fd, ", %x", data);
             else
-                fprintf(stderr, ", %04x", data);
+                fprintf(fd, ", %04x", data);
         }
     }
     else
     {
         if(id == 0x07)
-            fprintf(stderr, ", %x", data);
+            fprintf(fd, ", %x", data);
         else
-            fprintf(stderr, ", %04x", data);
+            fprintf(fd, ", %04x", data);
     }
 
     if (a->id == 9 && interpret)
         printMemoryChange(a->disp, sw % 2);
-    fprintf(stderr, "\n");
+    fprintf(fd, "\n");
 
     if (interpret) {
         if (sw % 2 == 0x00)
@@ -556,26 +556,26 @@ int immediateToAccu(uint8_t* text, int curr, int id)
     }
 
     if(id == 0)
-        fprintf(stderr, "add ");
+        fprintf(fd, "add ");
     else if (id == 1)
-        fprintf(stderr, "adc ");
+        fprintf(fd, "adc ");
     else if (id == 2)
-        fprintf(stderr, "sub ");
+        fprintf(fd, "sub ");
     else if (id == 3)
-        fprintf(stderr, "cmp ");
+        fprintf(fd, "cmp ");
     else if (id == 4)
-        fprintf(stderr, "and ");
+        fprintf(fd, "and ");
     else if (id == 5)
-        fprintf(stderr, "or ");
+        fprintf(fd, "or ");
     else if (id == 6)
-        fprintf(stderr, "xor ");
+        fprintf(fd, "xor ");
     else
-        fprintf(stderr, "test ");
+        fprintf(fd, "test ");
 
     if(word == 0x00)
-        fprintf(stderr, "%s, %x\n", regByte[0], data);
+        fprintf(fd, "%s, %x\n", regByte[0], data);
     else
-        fprintf(stderr, "%s, %04x\n", regWord[0], data);
+        fprintf(fd, "%s, %04x\n", regWord[0], data);
 
 
     if(interpret)
@@ -686,18 +686,18 @@ int incRegMem(uint8_t* text, int curr)
     struct pair* a = getRmAddress(rm, mod, disp, word);
 
     if(id == 0x00)
-        fprintf(stderr, "inc ");
+        fprintf(fd, "inc ");
     else if(id == 0x01)
-        fprintf(stderr, "dec ");
+        fprintf(fd, "dec ");
     else if(id == 0x02 || id == 0x03)
-        fprintf(stderr, "call ");
+        fprintf(fd, "call ");
     else if(id == 0x04 || id == 0x05)
-        fprintf(stderr, "jmp ");
+        fprintf(fd, "jmp ");
 
     printRm(rm, mod, disp, word, 0x00);
     if (a->id == 9 && interpret)
         printMemoryChange(a->disp, word);
-    fprintf(stderr, "\n");
+    fprintf(fd, "\n");
 
     if (interpret) {
         if (word == 0x00)
@@ -817,9 +817,9 @@ int incReg(uint8_t* text, int curr, int id)
     printReadBytes(1, text, curr);
 
     if(id == 0)
-        fprintf(stderr, "inc %s\n", regWord[reg]);
+        fprintf(fd, "inc %s\n", regWord[reg]);
     else
-        fprintf(stderr, "dec %s\n", regWord[reg]);
+        fprintf(fd, "dec %s\n", regWord[reg]);
 
     if (interpret) {
         if (id == 0)
@@ -846,19 +846,19 @@ int aaaBaa(uint8_t* text, int curr, int id)
     printReadBytes(read, text, curr);
 
     if(id == 0)
-        fprintf(stderr, "aaa\n");
+        fprintf(fd, "aaa\n");
     else if (id == 1)
-        fprintf(stderr, "baa\n");
+        fprintf(fd, "baa\n");
     else if (id == 2)
-        fprintf(stderr, "aas\n");
+        fprintf(fd, "aas\n");
     else if (id == 3)
-        fprintf(stderr, "das\n");
+        fprintf(fd, "das\n");
     else if (id == 4)
-        fprintf(stderr, "aad\n");
+        fprintf(fd, "aad\n");
     else if (id == 5)
-        fprintf(stderr, "cbw\n");
+        fprintf(fd, "cbw\n");
     else
-        fprintf(stderr, "cwd\n");
+        fprintf(fd, "cwd\n");
 
     if(interpret)
     {
@@ -907,22 +907,22 @@ int negMul(uint8_t* text, int curr)
 
     struct pair* a = getRmAddress(rm, mod, disp, word);
     if (id == 0x03)
-        fprintf(stderr, "neg ");
+        fprintf(fd, "neg ");
     else if (id == 0x04)
-        fprintf(stderr, "mul ");
+        fprintf(fd, "mul ");
     else if (id == 0x05)
-        fprintf(stderr, "imul ");
+        fprintf(fd, "imul ");
     else if (id == 0x02)
-        fprintf(stderr, "not ");
+        fprintf(fd, "not ");
     else if (id == 0x06)
-        fprintf(stderr, "div ");
+        fprintf(fd, "div ");
     else if (id == 0x07)
-        fprintf(stderr, "idiv ");
+        fprintf(fd, "idiv ");
 
     printRm(rm, mod, disp, word, 0x00);
     if (a->id == 9 && interpret)
         printMemoryChange(a->disp, word);
-    fprintf(stderr, "\n");
+    fprintf(fd, "\n");
 
     if(interpret)
     {

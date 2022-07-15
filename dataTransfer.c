@@ -36,30 +36,30 @@ int RegMemtofromReg(uint8_t* text, int curr, uint8_t dir, uint8_t word)
     
     struct pair *a = getRmAddress(rm, mod, disp, word);
     printReadBytes(read, text, curr);
-    fprintf(stderr, "mov ");
+    fprintf(fd, "mov ");
 
     if (dir == 0x00)
     {
         printRm(rm, mod, disp, word, 0x00);
 
         if (word == 0x00)
-            fprintf(stderr, ", %s", regByte[reg]);
+            fprintf(fd, ", %s", regByte[reg]);
         else
-            fprintf(stderr, ", %s", regWord[reg]);
+            fprintf(fd, ", %s", regWord[reg]);
     }
     else
     {
         if (word == 0x00)
-            fprintf(stderr, "%s, ", regByte[reg]);
+            fprintf(fd, "%s, ", regByte[reg]);
         else
-            fprintf(stderr, "%s, ", regWord[reg]);
+            fprintf(fd, "%s, ", regWord[reg]);
 
         printRm(rm, mod, disp, word, 0x00);
     }
 
     if (a->id == 9 && interpret)
         printMemoryChange(a->disp, word);
-    fprintf(stderr, "\n");
+    fprintf(fd, "\n");
 
     if (interpret)
     {
@@ -147,23 +147,23 @@ int immediateToRegMem(uint8_t* text, int curr, uint8_t word)
 
     struct pair* a = getRmAddress(rm, mod, disp, word);
     printReadBytes(read, text, curr);
-    fprintf(stderr, "mov ");
+    fprintf(fd, "mov ");
 
     if (word == 0x00)
     {
-        fprintf(stderr, "byte ");
+        fprintf(fd, "byte ");
     }
 
     printRm(rm, mod, disp, word, 0x00);
 
     if(word == 0x00)
-        fprintf(stderr, ", %x", data);
+        fprintf(fd, ", %x", data);
     else
-        fprintf(stderr, ", %04x", data);
+        fprintf(fd, ", %04x", data);
 
     if (a->id == 9 && interpret)
         printMemoryChange(a->disp, word);
-    fprintf(stderr, "\n");
+    fprintf(fd, "\n");
 
     if (interpret)
     {
@@ -194,12 +194,12 @@ void immediateToRegister(uint8_t* text, int curr)
     if (w == 0x00)
     {
         printReadBytes(2, text, curr);
-        fprintf(stderr, "mov %s, %02x\n", regByte[reg], text[curr + 1]);
+        fprintf(fd, "mov %s, %02x\n", regByte[reg], text[curr + 1]);
     }
     else
     {
         printReadBytes(3, text, curr);
-        fprintf(stderr, "mov %s, %02x%02x\n", regWord[reg], text[curr + 2], text[curr + 1]);
+        fprintf(fd, "mov %s, %02x%02x\n", regWord[reg], text[curr + 2], text[curr + 1]);
     }
 
     if (interpret)
@@ -220,21 +220,21 @@ int memoryToFromAccu(uint8_t* text, int curr, uint8_t word, uint8_t dir)
     int read;
     read = 3;
     printReadBytes(3, text, curr);
-    fprintf(stderr, "mov ");
+    fprintf(fd, "mov ");
     
     if(dir == 0x00)
     {
         if(word == 0x00)
-            fprintf(stderr, "%s, %02x -> %02x\n", regByte[0], text[curr+1], text[curr+2]);
+            fprintf(fd, "%s, %02x -> %02x\n", regByte[0], text[curr+1], text[curr+2]);
         else
-            fprintf(stderr, "%s, %02x -> %02x\n", regWord[0], text[curr+1], text[curr+2]);
+            fprintf(fd, "%s, %02x -> %02x\n", regWord[0], text[curr+1], text[curr+2]);
     }
     else
     {
         if(word == 0x00)
-            fprintf(stderr, "%02x -> %02x, %s\n", text[curr+1], text[curr+2], regByte[0]);
+            fprintf(fd, "%02x -> %02x, %s\n", text[curr+1], text[curr+2], regByte[0]);
         else 
-            fprintf(stderr, "%02x -> %02x, %s\n", text[curr+1], text[curr+2], regWord[0]);
+            fprintf(fd, "%02x -> %02x, %s\n", text[curr+1], text[curr+2], regWord[0]);
     }
 
     return read;
@@ -271,18 +271,18 @@ int regMemToFromSeg(uint8_t* text, int curr, uint8_t dir)
         word = 0x00;
     }
     
-    fprintf(stderr, "mov ");
+    fprintf(fd, "mov ");
     
     if(dir == 0x00)
     {
         printRm(rm, mod, disp, word, 0x01);
-        fprintf(stderr, ", %s\n", regSegment[reg]);
+        fprintf(fd, ", %s\n", regSegment[reg]);
     }
     else
     {
-        fprintf(stderr, "%s, ", regSegment[reg]);
+        fprintf(fd, "%s, ", regSegment[reg]);
         printRm(rm, mod, disp, word, 0x01);
-        fprintf(stderr, "\n");
+        fprintf(fd, "\n");
     }
 
     return read;
@@ -318,14 +318,14 @@ int pushPopRegMem(uint8_t* text, int curr, int pop)
     struct pair* a = getRmAddress(rm, mod, disp, word);
     printReadBytes(read, text, curr);
     if (pop == 0)
-        fprintf(stderr, "push ");
+        fprintf(fd, "push ");
     else
-        fprintf(stderr, "pop ");
+        fprintf(fd, "pop ");
 
     printRm(rm, mod, disp, word, 0x00);
     if (a->id == 9 && interpret)
         printMemoryChange(a->disp, 0x01);
-    fprintf(stderr, "\n");
+    fprintf(fd, "\n");
 
     if (interpret)
     {
@@ -356,9 +356,9 @@ int pushPopReg(uint8_t* text, int curr, int pop)
     uint8_t reg = text[curr] % 8;
     printReadBytes(1, text, curr);
     if(pop == 0)
-        fprintf(stderr, "push %s\n", regWord[reg]);
+        fprintf(fd, "push %s\n", regWord[reg]);
     else 
-        fprintf(stderr, "pop %s\n", regWord[reg]);
+        fprintf(fd, "pop %s\n", regWord[reg]);
 
     if (interpret)
     {
@@ -382,9 +382,9 @@ int pushPopSeg(uint8_t* text, int curr, int pop)
     uint8_t reg = (text[curr] % 16) / 8;
     printReadBytes(1, text, curr);
     if(pop == 0)
-        fprintf(stderr, "push %s\n", regSegment[reg]);
+        fprintf(fd, "push %s\n", regSegment[reg]);
     else      
-        fprintf(stderr, "pop %s\n", regSegment[reg]);
+        fprintf(fd, "pop %s\n", regSegment[reg]);
     return 1;
 }
 
@@ -416,14 +416,14 @@ int xchgRegMemWReg(uint8_t* text, int curr)
         read = 2;
     }
     
-    fprintf(stderr, "xchg ");
+    fprintf(fd, "xchg ");
 
     printRm(rm, mod, disp, word, 0x00);
     
     if(word == 0x00)
-        fprintf(stderr, ", %s\n", regByte[reg]);
+        fprintf(fd, ", %s\n", regByte[reg]);
     else
-        fprintf(stderr, ", %s\n", regWord[reg]);
+        fprintf(fd, ", %s\n", regWord[reg]);
 
     return read;
 }
@@ -432,7 +432,7 @@ int xchgRegAccu(uint8_t* text, int curr)
 {
     uint8_t reg = text[curr] % 8;
     printReadBytes(1, text, curr);
-    fprintf(stderr, "xchg %s, %s\n", regWord[reg], regWord[0]);
+    fprintf(fd, "xchg %s, %s\n", regWord[reg], regWord[0]);
 
     if(interpret)
     {
@@ -458,26 +458,26 @@ int inOutFromTo(uint8_t* text, int curr, int port, int out)
         printReadBytes(1, text, curr);
 
     if(out == 0)
-        fprintf(stderr, "in");
+        fprintf(fd, "in");
     else
-        fprintf(stderr, "out");
+        fprintf(fd, "out");
     
     if(port == 1)
     {
         if(word == 0x00)
-            fprintf(stderr, " %s, %x", regByte[0], text[curr+1]);
+            fprintf(fd, " %s, %x", regByte[0], text[curr+1]);
         else
-            fprintf(stderr, " %s, %x", regWord[0], text[curr+1]);
+            fprintf(fd, " %s, %x", regWord[0], text[curr+1]);
     }
     else
     {
         if (word == 0x00)
-            fprintf(stderr, " %s, dx", regByte[0]);
+            fprintf(fd, " %s, dx", regByte[0]);
         else
-            fprintf(stderr, " %s, dx", regWord[0]);
+            fprintf(fd, " %s, dx", regWord[0]);
 
     }
-    fprintf(stderr, "\n");
+    fprintf(fd, "\n");
     return read;
 }
 
@@ -511,18 +511,18 @@ int leaLdsLes(uint8_t* text, int curr, int id)
     struct pair *a = getRmAddress(rm, mod, disp, word);
     printReadBytes(read, text, curr);
     if (id == 0)
-        fprintf(stderr, "lea ");
+        fprintf(fd, "lea ");
     else if (id == 1)
-        fprintf(stderr, "lds ");
+        fprintf(fd, "lds ");
     else
-        fprintf(stderr, "les ");
+        fprintf(fd, "les ");
 
-    fprintf(stderr, "%s, ", regWord[reg]);
+    fprintf(fd, "%s, ", regWord[reg]);
     printRm(rm, mod, disp, word, 0x00);
 
     if (a->id == 9 && interpret)
         printMemoryChange(a->disp, word);
-    fprintf(stderr, "\n");
+    fprintf(fd, "\n");
 
     if (interpret)
     {
@@ -531,18 +531,18 @@ int leaLdsLes(uint8_t* text, int curr, int id)
             if (id == 0) // LEA
                 setRegister16(reg, a->disp);
             //else if (id == 1)
-                //fprintf(stderr, "lds ");
+                //fprintf(fd, "lds ");
             //else
-                //fprintf(stderr, "les ");
+                //fprintf(fd, "les ");
         }
         else
         {
             if (id == 0) // LEA
                 setRegister16(reg, a->disp);
             //else if (id == 1)
-                //fprintf(stderr, "lds ");
+                //fprintf(fd, "lds ");
             //else
-                //fprintf(stderr, "les ");s
+                //fprintf(fd, "les ");s
         }
     }
 

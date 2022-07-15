@@ -3,6 +3,7 @@
 
 extern int interpret;
 extern uint8_t* mem;
+extern FILE* fd;
 
 struct CPU {
     uint16_t registers[8];

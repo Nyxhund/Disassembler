@@ -19,18 +19,18 @@ int controlDirect(uint8_t* text, int curr, int id)
     int read = 3;
 
     if (id == 0)
-        fprintf(stderr, "call ");
+        fprintf(fd, "call ");
     else if (id == 1)
-        fprintf(stderr, "jmp ");
+        fprintf(fd, "jmp ");
     else if (id == 2)
-        fprintf(stderr, "jmp short ");
+        fprintf(fd, "jmp short ");
     else if (id == 3)
-        fprintf(stderr, "ret ");
+        fprintf(fd, "ret ");
 
     if(id != 3)
-        fprintf(stderr, "%04x\n", (uint16_t) (disp + curr + 0x03));
+        fprintf(fd, "%04x\n", (uint16_t) (disp + curr + 0x03));
     else
-        fprintf(stderr, "%04x\n", disp);
+        fprintf(fd, "%04x\n", disp);
 
     if (interpret) {
         if (id == 0)
@@ -59,7 +59,7 @@ int jumpShort(uint8_t* text, int curr)
     printReadBytes(2, text, curr);
     int read = 2;
 
-    fprintf(stderr, "jmp short %04x\n", disp + curr + 2);
+    fprintf(fd, "jmp short %04x\n", disp + curr + 2);
     if (interpret)
         read = disp + 2;
     return read;
@@ -73,46 +73,46 @@ int controlSimpleCommands(uint8_t* text, int curr, int id)
     switch (id)
     {
         case 0:
-            fprintf(stderr, "ret\n");
+            fprintf(fd, "ret\n");
             break;
         case 1:
-            fprintf(stderr, "int\n");
+            fprintf(fd, "int\n");
             break;
         case 2:
-            fprintf(stderr, "into\n");
+            fprintf(fd, "into\n");
             break;
         case 3:
-            fprintf(stderr, "iret\n");
+            fprintf(fd, "iret\n");
             break;
         case 4:
-            fprintf(stderr, "clc\n");
+            fprintf(fd, "clc\n");
             break;
         case 5:
-            fprintf(stderr, "cmc\n");
+            fprintf(fd, "cmc\n");
             break;
         case 6:
-            fprintf(stderr, "stc\n");
+            fprintf(fd, "stc\n");
             break;
         case 7:
-            fprintf(stderr, "cld\n");
+            fprintf(fd, "cld\n");
             break;
         case 8:
-            fprintf(stderr, "std\n");
+            fprintf(fd, "std\n");
             break;
         case 9:
-            fprintf(stderr, "cli\n");
+            fprintf(fd, "cli\n");
             break;
         case 10:
-            fprintf(stderr, "sti\n");
+            fprintf(fd, "sti\n");
             break;
         case 11:
-            fprintf(stderr, "hlt\n");
+            fprintf(fd, "hlt\n");
             break;
         case 12:
-            fprintf(stderr, "wait\n");
+            fprintf(fd, "wait\n");
             break;
         case 13:
-            fprintf(stderr, "lock\n");
+            fprintf(fd, "lock\n");
             break;
     }
 
@@ -120,48 +120,48 @@ int controlSimpleCommands(uint8_t* text, int curr, int id)
         switch (id)
         {
         case 0:
-            //fprintf(stderr, "ret\n");
+            //fprintf(fd, "ret\n");
             read = *((uint16_t*)(mem + *getRegister16(0x04))) - curr;
             setRegister16(0x04, *getRegister16(0x04) + 2);
             break;
         case 1:
-            //fprintf(stderr, "int\n");
+            //fprintf(fd, "int\n");
             break;
         case 2:
-            //fprintf(stderr, "into\n");
+            //fprintf(fd, "into\n");
             break;
         case 3:
-            //fprintf(stderr, "iret\n");
+            //fprintf(fd, "iret\n");
             break;
         case 4:
-            //fprintf(stderr, "clc\n");
+            //fprintf(fd, "clc\n");
             break;
         case 5:
-            //fprintf(stderr, "cmc\n");
+            //fprintf(fd, "cmc\n");
             break;
         case 6:
-            //fprintf(stderr, "stc\n");
+            //fprintf(fd, "stc\n");
             break;
         case 7:
-            //fprintf(stderr, "cld\n");
+            //fprintf(fd, "cld\n");
             break;
         case 8:
-            //fprintf(stderr, "std\n");
+            //fprintf(fd, "std\n");
             break;
         case 9:
-            //fprintf(stderr, "cli\n");
+            //fprintf(fd, "cli\n");
             break;
         case 10:
-            //fprintf(stderr, "sti\n");
+            //fprintf(fd, "sti\n");
             break;
         case 11:
-            //fprintf(stderr, "hlt\n");
+            //fprintf(fd, "hlt\n");
             break;
         case 12:
-            //fprintf(stderr, "wait\n");
+            //fprintf(fd, "wait\n");
             break;
         case 13:
-            //fprintf(stderr, "lock\n");
+            //fprintf(fd, "lock\n");
             break;
         }
     }
@@ -179,135 +179,135 @@ int conditionalJump(uint8_t* text, int curr)
     switch (id)
     {
         case 0x00:
-            fprintf(stderr, "jo ");
+            fprintf(fd, "jo ");
             break;
         case 0x01:
-            fprintf(stderr, "jno ");
+            fprintf(fd, "jno ");
             break;
         case 0x02:
-            fprintf(stderr, "jb ");
+            fprintf(fd, "jb ");
             break;
         case 0x03:
-            fprintf(stderr, "jnb ");
+            fprintf(fd, "jnb ");
             break;
         case 0x04:
-            fprintf(stderr, "je ");
+            fprintf(fd, "je ");
             break;
         case 0x05:
-            fprintf(stderr, "jne ");
+            fprintf(fd, "jne ");
             break;
         case 0x06:
-            fprintf(stderr, "jbe ");
+            fprintf(fd, "jbe ");
             break;
         case 0x07:
-            fprintf(stderr, "jnbe ");
+            fprintf(fd, "jnbe ");
             break;
         case 0x08:
-            fprintf(stderr, "js ");
+            fprintf(fd, "js ");
             break;
         case 0x09:
-            fprintf(stderr, "jns ");
+            fprintf(fd, "jns ");
             break;
         case 0x0a:
-            fprintf(stderr, "jp ");
+            fprintf(fd, "jp ");
             break;
         case 0x0b:
-            fprintf(stderr, "jnp ");
+            fprintf(fd, "jnp ");
             break;
         case 0x0c:
-            fprintf(stderr, "jl ");
+            fprintf(fd, "jl ");
             break;
         case 0x0d:
-            fprintf(stderr, "jnl ");
+            fprintf(fd, "jnl ");
             break;
         case 0x0e:
-            fprintf(stderr, "jle ");
+            fprintf(fd, "jle ");
             break;
         case 0x0f:
-            fprintf(stderr, "jnle ");
+            fprintf(fd, "jnle ");
             break;
     }
 
 
-    fprintf(stderr, "%04x\n", (0x02 + disp + curr) % 0x10000);
+    fprintf(fd, "%04x\n", (0x02 + disp + curr) % 0x10000);
 
     if (interpret)
     {
         switch (id)
         {
         case 0x00:
-            //fprintf(stderr, "jo ");
+            //fprintf(fd, "jo ");
             if (cpu->O)
                 read = disp + 0x02;
             break;
         case 0x01:
-            //fprintf(stderr, "jno ");
+            //fprintf(fd, "jno ");
             if (!cpu->O)
                 read = disp + 0x02;
             break;
         case 0x02:
-            //fprintf(stderr, "jb ");
+            //fprintf(fd, "jb ");
             if (cpu->C)
                 read = disp + 0x02;
             break;
         case 0x03:
-            //fprintf(stderr, "jnb ");
+            //fprintf(fd, "jnb ");
             if (!cpu->C)
                 read = disp + 0x02;
             break;
         case 0x04:
-            //fprintf(stderr, "je ");
+            //fprintf(fd, "je ");
             if (cpu->Z)
                 read = disp + 0x02;
             break;
         case 0x05:
-            //fprintf(stderr, "jne ");
+            //fprintf(fd, "jne ");
             if (!cpu->Z)
                 read = disp + 0x02;
             break;
         case 0x06:
-            //fprintf(stderr, "jbe ");
+            //fprintf(fd, "jbe ");
             if (cpu->C || cpu->Z)
                 read = disp + 0x02;
             break;
         case 0x07:
-            //fprintf(stderr, "jnbe ");
+            //fprintf(fd, "jnbe ");
             if (!cpu->C && !cpu->Z)
                 read = disp + 0x02;
             break;
         case 0x08:
-            //fprintf(stderr, "js ");
+            //fprintf(fd, "js ");
             if (cpu->S)
                 read = disp + 0x02;
             break;
         case 0x09:
-            //fprintf(stderr, "jns ");
+            //fprintf(fd, "jns ");
             if (!cpu->S)
                 read = disp + 0x02;
             break;
         case 0x0a:
-            //fprintf(stderr, "jp ");
+            //fprintf(fd, "jp ");
             break;
         case 0x0b:
-            //fprintf(stderr, "jnp ");
+            //fprintf(fd, "jnp ");
             break;
         case 0x0c:
-            //fprintf(stderr, "jl ");
+            //fprintf(fd, "jl ");
             if (cpu->S != cpu->O)
                 read = disp + 0x02;
             break;
         case 0x0d:
-            //fprintf(stderr, "jnl ");
+            //fprintf(fd, "jnl ");
             if (cpu->S == cpu->O)
                 read = disp + 0x02;
             break;
         case 0x0e:
-            //fprintf(stderr, "jle ");
+            //fprintf(fd, "jle ");
             if ((cpu->S != cpu->O) || cpu->Z)
                 read = disp + 0x02;
             break;
         case 0x0f:
-            //fprintf(stderr, "jnle ");
+            //fprintf(fd, "jnle ");
             if (!cpu->S && !cpu->Z)
                 read = disp + 0x02;
             break;
@@ -325,20 +325,20 @@ int conditionalLoop(uint8_t* text, int curr)
     switch (id)
     {
         case 0x00:
-            fprintf(stderr, "loopnz ");
+            fprintf(fd, "loopnz ");
             break;
         case 0x01:
-            fprintf(stderr, "loopz ");
+            fprintf(fd, "loopz ");
             break;
         case 0x02:
-            fprintf(stderr, "loop ");
+            fprintf(fd, "loop ");
             break;
         case 0x03:
-            fprintf(stderr, "jcxz ");
+            fprintf(fd, "jcxz ");
             break;
     }
 
-    fprintf(stderr, "%04x\n", (0x02 + disp + curr) % 0x10000);
+    fprintf(fd, "%04x\n", (0x02 + disp + curr) % 0x10000);
     return 2;
 }
 
@@ -346,7 +346,7 @@ int intTypeSpec(uint8_t* text, int curr)
 {
     uint8_t type = text[curr+1];
     printReadBytes(2, text, curr);
-    fprintf(stderr, "int %x\n", type);
+    fprintf(fd, "int %x\n", type);
 
     if(interpret)
         syscall();
@@ -378,7 +378,7 @@ int escape(uint8_t* text, int curr)
         read = 2;
     }
 
-    fprintf(stderr, "esc ");
+    fprintf(fd, "esc ");
     printRm(rm, mod, disp, 0x01, 0x00);
     return read;
 }

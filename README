@@ -1,0 +1,15 @@
+----------------------------------- README for nyxvm, Advanced OS project -------------------------------------
+
+    About the project:
+nyxvm is a project done over the course of Spring Semester at Shibaura Institute of Technology, Japan, by Esteban Dulaurans. The project is a Virtual Machine that reproduces some functionalities of the Minix processor. The program reads basic executed .c files as well as assembly files and emulates the behavior of the Minix procesor. The 2 main functionalities implemented are the disassembler and the interpretor, according to the example seen in class. Currently, the program properly interprets all the files required by the course. All files 1-6.s and 1-6.c work. This file gives a brief explanation on how to compile and use the program.
+
+    Compiling:
+To compile the program, simply type "make" in your terminal at the root of the project. The provided Makefile compiles all the necessary .c files for the creation of the executable.
+
+    Testing:
+In the same way as the mmvm, you need to type "./nyxvm -? a.out" (replacing ? with either "d" for the disassembler or "m" for the interpreter in debug mode). You can also type "./nyxvm a.out" if you only want to execute the file, without the debug mode. If the program takes some inputs (5.c), you can just add them in the sequence.
+
+    Error handling:
+If you enter no parameters, the program will stop by itself, indicating that the user needs to give a path. If the given file does not correspond to an existing file, the program will notify the user. If the provided file is not an executable binary of the correct format, the program will not check it, so the behavior is undefined. IF THE FIRST PARAMETER is not -m or -d, it will be considered as a path, so watch out for typing the correct parameter when executing the program.
+
+---------------------------------------------------------------------------------------------------------------

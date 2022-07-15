@@ -27,7 +27,7 @@ int processOPCode(uint8_t* text, int curr, int max)
             else
             {
                 printReadBytes(1, text, curr);
-                fprintf(stderr, "(undefined)\n");
+                fprintf(fd, "(undefined)\n");
                 read = 1;
             }
             break;
@@ -782,7 +782,7 @@ int processOPCode(uint8_t* text, int curr, int max)
 
         default:
             printReadBytes(1, text, curr);
-            fprintf(stderr, "(undefined)\n");
+            fprintf(fd, "(undefined)\n");
             read = 1;
             break;
     }
@@ -792,6 +792,7 @@ int processOPCode(uint8_t* text, int curr, int max)
 int interpret;
 struct CPU *cpu;
 uint8_t *mem;
+FILE* fd;
 
 void processArgs(char** argv, uint16_t argc)
 {
@@ -874,11 +875,14 @@ void processArgs(char** argv, uint16_t argc)
 
 int main(int argc, char** argv)
 {
-    if(argc < 3)
+    if(argc < 2)
     {
-        fprintf(stderr, "Wrong input: please enter at least a path to a binary executable and a mode to execute.\n");
+        fprintf(stderr, "Wrong input: please enter at least a path to a binary executable.\n");
         return 1;
     }
+
+    int path = 2;
+    fd = stderr;
     
     if(strcmp(argv[1], "-d") == 0)
         interpret = 0;
@@ -886,14 +890,18 @@ int main(int argc, char** argv)
         interpret = 1;
     else
     {
-        fprintf(stderr, "Wrong input: please enter a correct mode of execution (-d or -m).\n");
-        return 1;
+        path = 1;
+        fd = fopen("binDumpStdERR.txt", "w"); // DUMP FILE FOR PRINTING IF NOT IN DEBUG MODE
+        interpret = 1;
     }
 
-    FILE* file = fopen(argv[2], "rb");
+    FILE* file = fopen(argv[path], "rb");
 
     if(!file)
+    {
+        fprintf(stderr, "Wrong input: please enter a correct path to an executable.\n");
         return 1;
+    }
 
     size_t a = 0;
     if(a)
@@ -915,15 +923,15 @@ int main(int argc, char** argv)
     cpu = malloc(sizeof(struct CPU));
     memset(cpu, 0, sizeof(struct CPU));
 
-    processArgs(argv + 2, argc - 2);
+    processArgs(argv + path, argc - path);
 
     if(interpret)
-        fprintf(stderr, " AX   BX   CX   DX   SP   BP   SI   DI  FLAGS IP\n");
+        fprintf(fd, " AX   BX   CX   DX   SP   BP   SI   DI  FLAGS IP\n");
     
     while(curr < header->a_text)
     {
         if (!interpret)
-            fprintf(stderr, "%04x: ", curr);
+            fprintf(fd, "%04x: ", curr);
         else
             printRegisters(curr);
         curr += processOPCode(text, curr, header->a_text);
@@ -935,4 +943,5 @@ int main(int argc, char** argv)
     fclose(file);
     if(interpret)
         free(cpu);
+    
 }

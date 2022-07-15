@@ -43,7 +43,8 @@ void syscall()
 			uint16_t addr = *((uint16_t*)(mem + *getRegister16(0x03) + 10));
 			fprintf(stderr, "<brk(0x%04x) => ", addr);
 
-			if (/*addr < 0xffff || */ (addr >= ((*getRegister16(0x04) & ~0x3ff) - 0x400))) {
+			if (addr >= ((*getRegister16(0x04) & ~0x3ff) - 0x400))
+			{
 				errno = ENOMEM;
 				if (interpret) fprintf(stderr, "ENOMEM>\n");
 				m->m_type = -errno;

@@ -44,13 +44,9 @@ int controlDirect(uint8_t* text, int curr, int id)
         else if (id == 2)
             read = 3;
         else if (id == 3)
-        {
-            
+        {         
             read = *((uint16_t*)(mem + *getRegister16(0x04))) - curr;
             setRegister16(0x04, *getRegister16(0x04) + 2 + disp);
-            
-            if(!interpret)
-                read = 3;
         }
     }
 

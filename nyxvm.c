@@ -23,7 +23,7 @@ int processOPCode(uint8_t* text, int curr, int max)
     {
         case 0x00:
             if(curr + 1 < max)
-                read = regMemAddReg(text, curr, 0);
+                read = arithOpe(text, curr, 0);
             else
             {
                 printReadBytes(1, text, curr);
@@ -32,27 +32,27 @@ int processOPCode(uint8_t* text, int curr, int max)
             }
             break;
         case 0x01:
-            read = regMemAddReg(text, curr, 0);
+            read = arithOpe(text, curr, 0);
             break;
         case 0x02:
-            read = regMemAddReg(text, curr, 0);
+            read = arithOpe(text, curr, 0);
             break;
         case 0x03:
-            read = regMemAddReg(text, curr, 0);
+            read = arithOpe(text, curr, 0);
             break;
         
         case 0x04:
-            read = immediateToAccu(text, curr, 0);
+            read = arithOpeImmediateToAccu(text, curr, 0);
             break;
         case 0x05:
-            read = immediateToAccu(text, curr, 0);
+            read = arithOpeImmediateToAccu(text, curr, 0);
             break;
 
         case 0x06:
-            read = pushPopSeg(text, curr, 0);
+            read = dataTransferPushPopSeg(text, curr, 0);
             break;
         case 0x07:
-            read = pushPopSeg(text, curr, 1);
+            read = dataTransferPushPopSeg(text, curr, 1);
             break;
         
         case 0x08:
@@ -69,64 +69,64 @@ int processOPCode(uint8_t* text, int curr, int max)
             break;
 
         case 0x0c:
-            read = immediateToAccu(text, curr, 5);
+            read = arithOpeImmediateToAccu(text, curr, 5);
             break;
         case 0x0d:
-            read = immediateToAccu(text, curr, 5);
+            read = arithOpeImmediateToAccu(text, curr, 5);
             break;
 
         case 0x0e:
-            read = pushPopSeg(text, curr, 0);
+            read = dataTransferPushPopSeg(text, curr, 0);
             break;
         case 0x0f:
-            read = pushPopSeg(text, curr, 1);
+            read = dataTransferPushPopSeg(text, curr, 1);
             break;
         
         case 0x10:
-            read = regMemAddReg(text, curr, 1);
+            read = arithOpe(text, curr, 1);
             break;
         case 0x11:
-            read = regMemAddReg(text, curr, 1);
+            read = arithOpe(text, curr, 1);
             break;
         case 0x12:
-            read = regMemAddReg(text, curr, 1);
+            read = arithOpe(text, curr, 1);
             break;
         case 0x13:
-            read = regMemAddReg(text, curr, 1);
+            read = arithOpe(text, curr, 1);
             break;
         
         case 0x14:
-            read = immediateToAccu(text, curr, 1);
+            read = arithOpeImmediateToAccu(text, curr, 1);
             break;
         case 0x15:
-            read = immediateToAccu(text, curr, 1);
+            read = arithOpeImmediateToAccu(text, curr, 1);
             break;
 
         case 0x16:
-            read = pushPopSeg(text, curr, 0);
+            read = dataTransferPushPopSeg(text, curr, 0);
             break;
         case 0x17:
-            read = pushPopSeg(text, curr, 1);
+            read = dataTransferPushPopSeg(text, curr, 1);
             break;
 
         case 0x18:
-            read = regMemAddReg(text, curr, 3);
+            read = arithOpe(text, curr, 3);
             break;
         case 0x19:
-            read = regMemAddReg(text, curr, 3);
+            read = arithOpe(text, curr, 3);
             break;
         case 0x1a:
-            read = regMemAddReg(text, curr, 3);
+            read = arithOpe(text, curr, 3);
             break;
         case 0x1b:
-            read = regMemAddReg(text, curr, 3);
+            read = arithOpe(text, curr, 3);
             break;
         
         case 0x1e:
-            read = pushPopSeg(text, curr, 0);
+            read = dataTransferPushPopSeg(text, curr, 0);
             break;
         case 0x1f:
-            read = pushPopSeg(text, curr, 1);
+            read = dataTransferPushPopSeg(text, curr, 1);
             break;
 
         case 0x20:
@@ -143,39 +143,39 @@ int processOPCode(uint8_t* text, int curr, int max)
             break;
 
         case 0x24:
-            read = immediateToAccu(text, curr, 4);
+            read = arithOpeImmediateToAccu(text, curr, 4);
             break;
         case 0x25:
-            read = immediateToAccu(text, curr, 4);
+            read = arithOpeImmediateToAccu(text, curr, 4);
             break;
 
         
         case 0x27:
-            read = aaaBaa(text, curr, 1);
+            read = arithAdjustConvert(text, curr, 1);
             break;
 
         case 0x28:
-            read = regMemAddReg(text, curr, 2);
+            read = arithOpe(text, curr, 2);
             break;
         case 0x29:
-            read = regMemAddReg(text, curr, 2);
+            read = arithOpe(text, curr, 2);
             break; 
         case 0x2a:
-            read = regMemAddReg(text, curr, 2);
+            read = arithOpe(text, curr, 2);
             break;
         case 0x2b:
-            read = regMemAddReg(text, curr, 2);
+            read = arithOpe(text, curr, 2);
             break;
         
         case 0x2c:
-            read = immediateToAccu(text, curr, 2);
+            read = arithOpeImmediateToAccu(text, curr, 2);
             break;
         case 0x2d:
-            read = immediateToAccu(text, curr, 2);
+            read = arithOpeImmediateToAccu(text, curr, 2);
             break;
 
         case 0x2f:
-            read = aaaBaa(text, curr, 3);
+            read = arithAdjustConvert(text, curr, 3);
             break;
         
         case 0x30:
@@ -192,197 +192,197 @@ int processOPCode(uint8_t* text, int curr, int max)
             break;
 
         case 0x34:
-            read = immediateToAccu(text, curr, 6);
+            read = arithOpeImmediateToAccu(text, curr, 6);
             break;
         case 0x35:
-            read = immediateToAccu(text, curr, 6);
+            read = arithOpeImmediateToAccu(text, curr, 6);
             break;
 
         case 0x37:
-            read = aaaBaa(text, curr, 0);
+            read = arithAdjustConvert(text, curr, 0);
             break;
 
         case 0x38:
-            read = regMemAddReg(text, curr, 4);
+            read = arithOpe(text, curr, 4);
             break;
         case 0x39:
-            read = regMemAddReg(text, curr, 4);
+            read = arithOpe(text, curr, 4);
             break;
         case 0x3a:
-            read = regMemAddReg(text, curr, 4);
+            read = arithOpe(text, curr, 4);
             break;
         case 0x3b:
-            read = regMemAddReg(text, curr, 4);
+            read = arithOpe(text, curr, 4);
             break;
         case 0x3c:
-            read = immediateToAccu(text, curr, 3);
+            read = arithOpeImmediateToAccu(text, curr, 3);
             break;
         case 0x3d:
-            read = immediateToAccu(text, curr, 3);
+            read = arithOpeImmediateToAccu(text, curr, 3);
             break;
 
         case 0x3f:
-            read = aaaBaa(text, curr, 2);
+            read = arithAdjustConvert(text, curr, 2);
             break;
 
         case 0x40:
-            read = incReg(text, curr, 0);
+            read = arithIncDec(text, curr, 0);
             break;
         case 0x41:
-            read = incReg(text, curr, 0);
+            read = arithIncDec(text, curr, 0);
             break;
         case 0x42:
-            read = incReg(text, curr, 0);
+            read = arithIncDec(text, curr, 0);
             break;
         case 0x43:
-            read = incReg(text, curr, 0);
+            read = arithIncDec(text, curr, 0);
             break;
         case 0x44:
-            read = incReg(text, curr, 0);
+            read = arithIncDec(text, curr, 0);
             break;
         case 0x45:
-            read = incReg(text, curr, 0);
+            read = arithIncDec(text, curr, 0);
             break;
         case 0x46:
-            read = incReg(text, curr, 0);
+            read = arithIncDec(text, curr, 0);
             break;
         case 0x47:
-            read = incReg(text, curr, 0);
+            read = arithIncDec(text, curr, 0);
             break;
         case 0x48:
-            read = incReg(text, curr, 1);
+            read = arithIncDec(text, curr, 1);
             break;
         case 0x49:
-            read = incReg(text, curr, 1);
+            read = arithIncDec(text, curr, 1);
             break;
         case 0x4a:
-            read = incReg(text, curr, 1);
+            read = arithIncDec(text, curr, 1);
             break;
         case 0x4b:
-            read = incReg(text, curr, 1);
+            read = arithIncDec(text, curr, 1);
             break;
         case 0x4c:
-            read = incReg(text, curr, 1);
+            read = arithIncDec(text, curr, 1);
             break;
         case 0x4d:
-            read = incReg(text, curr, 1);
+            read = arithIncDec(text, curr, 1);
             break;
         case 0x4e:
-            read = incReg(text, curr, 1);
+            read = arithIncDec(text, curr, 1);
             break;
         case 0x4f:
-            read = incReg(text, curr, 1);
+            read = arithIncDec(text, curr, 1);
             break;
 
         case 0x50:
-            read = pushPopReg(text, curr, 0);
+            read = dataTransferPushPopRegister(text, curr, 0);
             break;
         case 0x51:
-            read = pushPopReg(text, curr, 0);
+            read = dataTransferPushPopRegister(text, curr, 0);
             break;
         case 0x52:
-            read = pushPopReg(text, curr, 0);
+            read = dataTransferPushPopRegister(text, curr, 0);
             break;
         case 0x53:
-            read = pushPopReg(text, curr, 0);
+            read = dataTransferPushPopRegister(text, curr, 0);
             break;
         case 0x54:
-            read = pushPopReg(text, curr, 0);
+            read = dataTransferPushPopRegister(text, curr, 0);
             break;
         case 0x55:
-            read = pushPopReg(text, curr, 0);
+            read = dataTransferPushPopRegister(text, curr, 0);
             break;
         case 0x56:
-            read = pushPopReg(text, curr, 0);
+            read = dataTransferPushPopRegister(text, curr, 0);
             break;
         case 0x57:
-            read = pushPopReg(text, curr, 0);
+            read = dataTransferPushPopRegister(text, curr, 0);
             break;
         case 0x58:
-            read = pushPopReg(text, curr, 1);
+            read = dataTransferPushPopRegister(text, curr, 1);
             break;
         case 0x59:
-            read = pushPopReg(text, curr, 1);
+            read = dataTransferPushPopRegister(text, curr, 1);
             break;
         case 0x5a:
-            read = pushPopReg(text, curr, 1);
+            read = dataTransferPushPopRegister(text, curr, 1);
             break;
         case 0x5b:
-            read = pushPopReg(text, curr, 1);
+            read = dataTransferPushPopRegister(text, curr, 1);
             break;
         case 0x5c:
-            read = pushPopReg(text, curr, 1);
+            read = dataTransferPushPopRegister(text, curr, 1);
             break;
         case 0x5d:
-            read = pushPopReg(text, curr, 1);
+            read = dataTransferPushPopRegister(text, curr, 1);
             break;
         case 0x5e:
-            read = pushPopReg(text, curr, 1);
+            read = dataTransferPushPopRegister(text, curr, 1);
             break;
         case 0x5f:
-            read = pushPopReg(text, curr, 1);
+            read = dataTransferPushPopRegister(text, curr, 1);
             break;
 
         case 0x70:
-            read = conditionalJump(text, curr);
+            read = controlConditionalJump(text, curr);
             break;
         case 0x71:
-            read = conditionalJump(text, curr);
+            read = controlConditionalJump(text, curr);
             break;
         case 0x72:
-            read = conditionalJump(text, curr);
+            read = controlConditionalJump(text, curr);
             break;
         case 0x73:
-            read = conditionalJump(text, curr);
+            read = controlConditionalJump(text, curr);
             break;
         case 0x74:
-            read = conditionalJump(text, curr);
+            read = controlConditionalJump(text, curr);
             break;
         case 0x75:
-            read = conditionalJump(text, curr);
+            read = controlConditionalJump(text, curr);
             break;
         case 0x76:
-            read = conditionalJump(text, curr);
+            read = controlConditionalJump(text, curr);
             break;
         case 0x77:
-            read = conditionalJump(text, curr);
+            read = controlConditionalJump(text, curr);
             break;
         case 0x78:
-            read = conditionalJump(text, curr);
+            read = controlConditionalJump(text, curr);
             break;
         case 0x79:
-            read = conditionalJump(text, curr);
+            read = controlConditionalJump(text, curr);
             break;
         case 0x7a:
-            read = conditionalJump(text, curr);
+            read = controlConditionalJump(text, curr);
             break;
         case 0x7b:
-            read = conditionalJump(text, curr);
+            read = controlConditionalJump(text, curr);
             break;
         case 0x7c:
-            read = conditionalJump(text, curr);
+            read = controlConditionalJump(text, curr);
             break;
         case 0x7d:
-            read = conditionalJump(text, curr);
+            read = controlConditionalJump(text, curr);
             break;
         case 0x7e:
-            read = conditionalJump(text, curr);
+            read = controlConditionalJump(text, curr);
             break;
         case 0x7f:
-            read = conditionalJump(text, curr);
+            read = controlConditionalJump(text, curr);
             break;
 
         case 0x80:
-            read = immediateAddRegMem(text, curr);
+            read = arithOpeImmediate(text, curr);
             break;
         case 0x81:
-            read = immediateAddRegMem(text, curr);
+            read = arithOpeImmediate(text, curr);
             break;
         case 0x82:
-            read = immediateAddRegMem(text, curr);
+            read = arithOpeImmediate(text, curr);
             break;
         case 0x83:
-            read = immediateAddRegMem(text, curr);
+            read = arithOpeImmediate(text, curr);
             break;
 
         case 0x84:
@@ -393,71 +393,71 @@ int processOPCode(uint8_t* text, int curr, int max)
             break;
 
         case 0x86:
-            read = xchgRegMemWReg(text, curr);
+            read = dataTransferXchg(text, curr);
             break;
         case 0x87:
-            read = xchgRegMemWReg(text, curr);
+            read = dataTransferXchg(text, curr);
             break;
 
         case 0x88:
-            read = RegMemtofromReg(text, curr, 0x00, 0x00);
+            read = dataTransferOpe(text, curr, 0x00, 0x00);
             break;
         case 0x89:
-            read = RegMemtofromReg(text, curr, 0x00, 0x01);
+            read = dataTransferOpe(text, curr, 0x00, 0x01);
             break;
         case 0x8a:
-            read = RegMemtofromReg(text, curr, 0x01, 0x00);
+            read = dataTransferOpe(text, curr, 0x01, 0x00);
             break;
         case 0x8b:
-            read = RegMemtofromReg(text, curr, 0x01, 0x01);
+            read = dataTransferOpe(text, curr, 0x01, 0x01);
             break;
 
         case 0x8c:
-            read = regMemToFromSeg(text, curr, 0x00);
+            read = dataTransferSeg(text, curr, 0x00);
             break;
         
         case 0x8d:
-            read = leaLdsLes(text, curr, 0);
+            read = dataTransferLeaLdsLes(text, curr, 0);
             break;
 
         case 0x8e:
-            read = regMemToFromSeg(text, curr, 0x01);
+            read = dataTransferSeg(text, curr, 0x01);
             break;
         
         case 0x8f:
-            read = pushPopRegMem(text, curr, 1);
+            read = dataTransferPushPopOpe(text, curr, 1);
             break;
     
         case 0x90:
-            read = xchgRegAccu(text, curr);
+            read = dataTransferXchgAccu(text, curr);
             break;
         case 0x91:
-            read = xchgRegAccu(text, curr);
+            read = dataTransferXchgAccu(text, curr);
             break;
         case 0x92:
-            read = xchgRegAccu(text, curr);
+            read = dataTransferXchgAccu(text, curr);
             break;
         case 0x93:
-            read = xchgRegAccu(text, curr);
+            read = dataTransferXchgAccu(text, curr);
             break;
         case 0x94:
-            read = xchgRegAccu(text, curr);
+            read = dataTransferXchgAccu(text, curr);
             break;
         case 0x95:
-            read = xchgRegAccu(text, curr);
+            read = dataTransferXchgAccu(text, curr);
             break;
         case 0x96:
-            read = xchgRegAccu(text, curr);
+            read = dataTransferXchgAccu(text, curr);
             break;
         case 0x97:
-            read = xchgRegAccu(text, curr);
+            read = dataTransferXchgAccu(text, curr);
             break;
         
         case 0x98:
-            read = aaaBaa(text, curr, 5);
+            read = arithAdjustConvert(text, curr, 5);
             break;
         case 0x99:
-            read = aaaBaa(text, curr, 6);
+            read = arithAdjustConvert(text, curr, 6);
             break;
         
         case 0x9b:
@@ -465,119 +465,119 @@ int processOPCode(uint8_t* text, int curr, int max)
             break;
 
         case 0xa0:
-            read = memoryToFromAccu(text, curr, 0x00, 0x00);
+            read = dataTransferAccu(text, curr, 0x00, 0x00);
             break;
         case 0xa1:
-            read = memoryToFromAccu(text, curr, 0x01, 0x00);
+            read = dataTransferAccu(text, curr, 0x01, 0x00);
             break;
         case 0xa2:
-            read = memoryToFromAccu(text, curr, 0x00, 0x01);
+            read = dataTransferAccu(text, curr, 0x00, 0x01);
             break;
         case 0xa3:
-            read = memoryToFromAccu(text, curr, 0x01, 0x01);
+            read = dataTransferAccu(text, curr, 0x01, 0x01);
             break;
 
         case 0xa4:
-            read = stringManipulation(text, curr, 1);
+            read = logicStringManipulation(text, curr, 1);
             break;
         case 0xa5:
-            read = stringManipulation(text, curr, 1);
+            read = logicStringManipulation(text, curr, 1);
             break;
         case 0xa6:
-            read = stringManipulation(text, curr, 2);
+            read = logicStringManipulation(text, curr, 2);
             break;
         case 0xa7:
-            read = stringManipulation(text, curr, 2);
+            read = logicStringManipulation(text, curr, 2);
             break;
 
         case 0xa8:
-            read = immediateToAccu(text, curr, 7);
+            read = arithOpeImmediateToAccu(text, curr, 7);
             break;
         case 0xa9:
-            read = immediateToAccu(text, curr, 7);
+            read = arithOpeImmediateToAccu(text, curr, 7);
             break;
         
         case 0xaa:
-            read = stringManipulation(text, curr, 5);
+            read = logicStringManipulation(text, curr, 5);
             break;
         case 0xab:
-            read = stringManipulation(text, curr, 5);
+            read = logicStringManipulation(text, curr, 5);
             break;
         case 0xac:
-            read = stringManipulation(text, curr, 4);
+            read = logicStringManipulation(text, curr, 4);
             break;
         case 0xad:
-            read = stringManipulation(text, curr, 4);
+            read = logicStringManipulation(text, curr, 4);
             break;
         case 0xae:
-            read = stringManipulation(text, curr, 3);
+            read = logicStringManipulation(text, curr, 3);
             break;
         case 0xaf:
-            read = stringManipulation(text, curr, 3);
+            read = logicStringManipulation(text, curr, 3);
             break;
 
         case 0xb0:
-            immediateToRegister(text, curr);
+            dataTransferImmediateRegister(text, curr);
             read = 2;
             break;
         case 0xb1:
-            immediateToRegister(text, curr);
+            dataTransferImmediateRegister(text, curr);
             read =  2;
             break;
         case 0xb2:
-            immediateToRegister(text, curr);
+            dataTransferImmediateRegister(text, curr);
             read = 2;
             break;
         case 0xb3:
-            immediateToRegister(text, curr);
+            dataTransferImmediateRegister(text, curr);
             read = 2;
             break;
         case 0xb4:
-            immediateToRegister(text, curr);
+            dataTransferImmediateRegister(text, curr);
             read = 2;
             break;
         case 0xb5:
-            immediateToRegister(text, curr);
+            dataTransferImmediateRegister(text, curr);
             read = 2;
             break;
         case 0xb6:
-            immediateToRegister(text, curr);
+            dataTransferImmediateRegister(text, curr);
             read = 2;
             break;
         case 0xb7:
-            immediateToRegister(text, curr);
+            dataTransferImmediateRegister(text, curr);
             read = 2;
             break;
         case 0xb8:
-            immediateToRegister(text, curr);
+            dataTransferImmediateRegister(text, curr);
             read = 3;
             break;
         case 0xb9:
-            immediateToRegister(text, curr);
+            dataTransferImmediateRegister(text, curr);
             read = 3;
             break;
         case 0xba:
-            immediateToRegister(text, curr);
+            dataTransferImmediateRegister(text, curr);
             read = 3;
             break;
         case 0xbb:
-            immediateToRegister(text, curr);
+            dataTransferImmediateRegister(text, curr);
             read = 3;
             break;
         case 0xbc:
-            immediateToRegister(text, curr);
+            dataTransferImmediateRegister(text, curr);
             read = 3;
             break;
         case 0xbd:
-            immediateToRegister(text, curr);
+            dataTransferImmediateRegister(text, curr);
             read = 3;
             break;
         case 0xbe:
-            immediateToRegister(text, curr);
+            dataTransferImmediateRegister(text, curr);
             read = 3;
             break;
         case 0xbf:
-            immediateToRegister(text, curr);
+            dataTransferImmediateRegister(text, curr);
             read = 3;
             break;
 
@@ -590,17 +590,17 @@ int processOPCode(uint8_t* text, int curr, int max)
             break;
         
         case 0xc4:
-            read = leaLdsLes(text, curr, 2);
+            read = dataTransferLeaLdsLes(text, curr, 2);
             break;
         case 0xc5:
-            read = leaLdsLes(text, curr, 1);
+            read = dataTransferLeaLdsLes(text, curr, 1);
             break;
 
         case 0xc6:
-            read = immediateToRegMem(text, curr, 0);
+            read = dataTransferOpeImmediate(text, curr, 0);
             break;
         case 0xc7:
-            read = immediateToRegMem(text, curr, 1);
+            read = dataTransferOpeImmediate(text, curr, 1);
             break;
         
         case 0xca:
@@ -615,7 +615,7 @@ int processOPCode(uint8_t* text, int curr, int max)
             break;
 
         case 0xcd:
-            read = intTypeSpec(text, curr);
+            read = controlSyscall(text, curr);
             break;
         
         case 0xce:
@@ -626,71 +626,71 @@ int processOPCode(uint8_t* text, int curr, int max)
             break;
         
         case 0xd0:
-            read = shifts(text, curr);
+            read = logicShifts(text, curr);
             break;
         case 0xd1:
-            read = shifts(text, curr);
+            read = logicShifts(text, curr);
             break;
         case 0xd2:
-            read = shifts(text, curr);
+            read = logicShifts(text, curr);
             break;
         case 0xd3:
-            read = shifts(text, curr);
+            read = logicShifts(text, curr);
             break;
 
         case 0xd5:
-            read = aaaBaa(text, curr, 4);
+            read = arithAdjustConvert(text, curr, 4);
             break;
 
         case 0xd8:
-            read = escape(text, curr);
+            read = controlEscape(text, curr);
             break;
         case 0xd9:
-            read = escape(text, curr);
+            read = controlEscape(text, curr);
             break;
         case 0xda:
-            read = escape(text, curr);
+            read = controlEscape(text, curr);
             break;
         case 0xdb:
-            read = escape(text, curr);
+            read = controlEscape(text, curr);
             break;
         case 0xdc:
-            read = escape(text, curr);
+            read = controlEscape(text, curr);
             break;
         case 0xdd:
-            read = escape(text, curr);
+            read = controlEscape(text, curr);
             break;
         case 0xde:
-            read = escape(text, curr);
+            read = controlEscape(text, curr);
             break;
         case 0xdf:
-            read = escape(text, curr);
+            read = controlEscape(text, curr);
             break;
 
         case 0xe0:
-            read = conditionalLoop(text, curr);
+            read = controlConditionalLoop(text, curr);
             break;
         case 0xe1:
-            read = conditionalLoop(text, curr);
+            read = controlConditionalLoop(text, curr);
             break;
         case 0xe2:
-            read = conditionalLoop(text, curr);
+            read = controlConditionalLoop(text, curr);
             break;
         case 0xe3:
-            read = conditionalLoop(text, curr);
+            read = controlConditionalLoop(text, curr);
             break;
 
         case 0xe4:
-            read = inOutFromTo(text, curr, 1, 0);
+            read = dataTransferInOut(text, curr, 1, 0);
             break;
         case 0xe5:
-            read = inOutFromTo(text, curr, 1, 0);
+            read = dataTransferInOut(text, curr, 1, 0);
             break;
         case 0xe6:
-            read = inOutFromTo(text, curr, 1, 1);
+            read = dataTransferInOut(text, curr, 1, 1);
             break;
         case 0xe7:
-            read = inOutFromTo(text, curr, 1, 1);
+            read = dataTransferInOut(text, curr, 1, 1);
             break;
 
         case 0xe8:
@@ -701,20 +701,20 @@ int processOPCode(uint8_t* text, int curr, int max)
             break;
 
         case 0xeb:
-            read = jumpShort(text, curr);
+            read = controlJumpShort(text, curr);
             break;
 
         case 0xec:
-            read = inOutFromTo(text, curr, 0, 0);
+            read = dataTransferInOut(text, curr, 0, 0);
             break;
         case 0xed:
-            read = inOutFromTo(text, curr, 0, 0);
+            read = dataTransferInOut(text, curr, 0, 0);
             break;
         case 0xee:
-            read = inOutFromTo(text, curr, 0, 1);
+            read = dataTransferInOut(text, curr, 0, 1);
             break;
         case 0xef:
-            read = inOutFromTo(text, curr, 0, 1);
+            read = dataTransferInOut(text, curr, 0, 1);
             break;
         
         case 0xf0:
@@ -722,10 +722,10 @@ int processOPCode(uint8_t* text, int curr, int max)
             break;
         
         case 0xf2:
-            read = stringManipulation(text, curr, 0);
+            read = logicStringManipulation(text, curr, 0);
             break;
         case 0xf3:
-            read = stringManipulation(text, curr, 0);
+            read = logicStringManipulation(text, curr, 0);
             break;
         
         case 0xf4:
@@ -737,14 +737,14 @@ int processOPCode(uint8_t* text, int curr, int max)
 
         case 0xf6:
             if((text[curr+1] % 64) / 8 != 0x00)
-                read = negMul(text, curr);
+                read = arithMultDiv(text, curr);
             else
                 read = logicImmediateToRegMem(text, curr);
             break;
         
         case 0xf7:
             if((text[curr+1] % 64) / 8 != 0x00)
-                read = negMul(text, curr);
+                read = arithMultDiv(text, curr);
             else
                 read = logicImmediateToRegMem(text, curr);
             break;
@@ -769,14 +769,14 @@ int processOPCode(uint8_t* text, int curr, int max)
             break;
 
         case 0xfe:
-            read = incRegMem(text, curr);
+            read = arithIncJump(text, curr);
             break;
 
         case 0xff:
             if((text[curr+1] % 64) / 8 != 0x06)
-                read = incRegMem(text, curr);
+                read = arithIncJump(text, curr);
             else
-                read = pushPopRegMem(text, curr, 0);
+                read = dataTransferPushPopOpe(text, curr, 0);
             break;
 
 

@@ -12,4 +12,12 @@ In the same way as the mmvm, you need to type "./nyxvm -? a.out" (replacing ? wi
     Error handling:
 If you enter no parameters, the program will stop by itself, indicating that the user needs to give a path. If the given file does not correspond to an existing file, the program will notify the user. If the provided file is not an executable binary of the correct format, the program will not check it, so the behavior is undefined. IF THE FIRST PARAMETER is not -m or -d, it will be considered as a path, so watch out for typing the correct parameter when executing the program.
 
+    Project architecture:
+The main function is located in nyxvm.c, which initializes all the necessary variables for the different modes of the program (cpu structure, memory and program text, please refer to utility.h to the declaration of the stuctures). nyxvm.c also contains the major function, processOpCode(), which redirects the program to the appropriate function in another file. All functions representing OP codes start with the name files they are located in, for an easier search (mainly all .c files except nyxvm.c, utility.c and syscall.c, which offer respectively the main function, auxiliary print and flag setter functions and the function that deals with the appropriate syscalls).
+
+Mainly, to analyze a specific OP code, look for the OP code in question in processOpCode() in nyxvm.c, than look at the specific function in the .c file with the same name as the start of the function. Most of the other major functions called all around are in utility.c.
+
+    Impressions:
+The content of this class was very interesting to me, as I only had little experience with assembly languages with the 68K. It made me understand many ascpects of Virtual Machines and binaries as a whole, after 2 years of Computer Science studies. The project was a little challenging at some times, mainly dealing with the message structure for syscalls as well as dealing with arguments and pushing them on the stack at the start of the program. That last part was not explained easily in the documentation, so I looked into the source files of the example program given, but I am not very sure I understood evetything in the function. But I managed to achieve the required 1-6.c files at the due date. Thank you for this course, it was very interesting and fullfilling project to produce doing the semester.
+
 ---------------------------------------------------------------------------------------------------------------

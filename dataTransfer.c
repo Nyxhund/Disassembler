@@ -11,7 +11,7 @@
 #include "dataTransfer.h"
 #include "utility.h"
 
-int RegMemtofromReg(uint8_t* text, int curr, uint8_t dir, uint8_t word)
+int dataTransferOpe(uint8_t* text, int curr, uint8_t dir, uint8_t word)
 {
     uint8_t reg = (text[curr+1] % 64) / 8;
     uint8_t mod = text[curr+1] / 64;
@@ -103,7 +103,7 @@ int RegMemtofromReg(uint8_t* text, int curr, uint8_t dir, uint8_t word)
     return read;
 }
 
-int immediateToRegMem(uint8_t* text, int curr, uint8_t word)
+int dataTransferOpeImmediate(uint8_t* text, int curr, uint8_t word)
 {
     uint8_t mod = text[curr+1] / 64;
     uint8_t rm = text[curr+1] % 8;
@@ -186,7 +186,7 @@ int immediateToRegMem(uint8_t* text, int curr, uint8_t word)
     return read;
 }
 
-void immediateToRegister(uint8_t* text, int curr)
+void dataTransferImmediateRegister(uint8_t* text, int curr)
 {
     uint8_t w = (text[curr] % 16) / 8;
     uint8_t reg = text[curr] % 8;
@@ -214,7 +214,7 @@ void immediateToRegister(uint8_t* text, int curr)
     }
 }
 
-int memoryToFromAccu(uint8_t* text, int curr, uint8_t word, uint8_t dir)
+int dataTransferAccu(uint8_t* text, int curr, uint8_t word, uint8_t dir)
 {
     // Never tested, function does not appear in 1-6.c files, so I'm not sure about the format of the print / functionning of the function
     int read;
@@ -240,7 +240,7 @@ int memoryToFromAccu(uint8_t* text, int curr, uint8_t word, uint8_t dir)
     return read;
 }
 
-int regMemToFromSeg(uint8_t* text, int curr, uint8_t dir)
+int dataTransferSeg(uint8_t* text, int curr, uint8_t dir)
 {   
     // Never tested, function does not appear in 1-6.c files, so I'm not sure about the format of the print / functionning of the function
     uint8_t mod = text[curr+1] / 64; 
@@ -288,7 +288,7 @@ int regMemToFromSeg(uint8_t* text, int curr, uint8_t dir)
     return read;
 }
 
-int pushPopRegMem(uint8_t* text, int curr, int pop)
+int dataTransferPushPopOpe(uint8_t* text, int curr, int pop)
 {
     uint8_t mod = text[curr+1] / 64;
     uint8_t rm = text[curr+1] % 8;
@@ -351,7 +351,7 @@ int pushPopRegMem(uint8_t* text, int curr, int pop)
     return read;
 }
 
-int pushPopReg(uint8_t* text, int curr, int pop)
+int dataTransferPushPopRegister(uint8_t* text, int curr, int pop)
 {
     uint8_t reg = text[curr] % 8;
     printReadBytes(1, text, curr);
@@ -376,7 +376,7 @@ int pushPopReg(uint8_t* text, int curr, int pop)
     return 1;
 }
 
-int pushPopSeg(uint8_t* text, int curr, int pop)
+int dataTransferPushPopSeg(uint8_t* text, int curr, int pop)
 {
     // Never tested, function does not appear in 1-6.c files, so I'm not sure about the format of the print / functionning of the function
     uint8_t reg = (text[curr] % 16) / 8;
@@ -388,7 +388,7 @@ int pushPopSeg(uint8_t* text, int curr, int pop)
     return 1;
 }
 
-int xchgRegMemWReg(uint8_t* text, int curr)
+int dataTransferXchg(uint8_t* text, int curr)
 {
     // Never tested, function does not appear in 1-6.c files, so I'm not sure about the format of the print / functionning of the function
     uint8_t reg = (text[curr+1] % 64) / 8;
@@ -428,7 +428,7 @@ int xchgRegMemWReg(uint8_t* text, int curr)
     return read;
 }
 
-int xchgRegAccu(uint8_t* text, int curr)
+int dataTransferXchgAccu(uint8_t* text, int curr)
 {
     uint8_t reg = text[curr] % 8;
     printReadBytes(1, text, curr);
@@ -443,7 +443,7 @@ int xchgRegAccu(uint8_t* text, int curr)
     return 1;
 }
 
-int inOutFromTo(uint8_t* text, int curr, int port, int out)
+int dataTransferInOut(uint8_t* text, int curr, int port, int out)
 {
     // Never tested, function does not appear in 1-6.c files, so I'm not sure about the format of the print / functionning of the function
     uint8_t word = text[curr] % 2;
@@ -481,7 +481,7 @@ int inOutFromTo(uint8_t* text, int curr, int port, int out)
     return read;
 }
 
-int leaLdsLes(uint8_t* text, int curr, int id)
+int dataTransferLeaLdsLes(uint8_t* text, int curr, int id)
 {
     uint8_t mod = text[curr+1] / 64; 
     uint8_t rm = text[curr+1] % 8;

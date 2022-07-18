@@ -11,7 +11,7 @@
 #include "utility.h"
 
 
-int regMemAddReg(uint8_t* text, int curr, int id)
+int arithOpe(uint8_t* text, int curr, int id)
 {
     uint8_t word = text[curr] % 2;
     uint8_t dir = (text[curr] % 4) / 2;
@@ -259,7 +259,7 @@ int regMemAddReg(uint8_t* text, int curr, int id)
     return read;
 }
 
-int immediateAddRegMem(uint8_t* text, int curr)
+int arithOpeImmediate(uint8_t* text, int curr)
 {
     uint8_t sw = text[curr] % 4;
     uint8_t mod = text[curr+1] / 64;
@@ -536,7 +536,7 @@ int immediateAddRegMem(uint8_t* text, int curr)
     return read;
 }
 
-int immediateToAccu(uint8_t* text, int curr, int id)
+int arithOpeImmediateToAccu(uint8_t* text, int curr, int id)
 {
     uint8_t word = text[curr] % 2;
     uint16_t data;
@@ -656,7 +656,7 @@ int immediateToAccu(uint8_t* text, int curr, int id)
     return read;
 }
 
-int incRegMem(uint8_t* text, int curr)
+int arithIncJump(uint8_t* text, int curr)
 {
     uint8_t word = text[curr] % 2;
     uint8_t mod = text[curr+1] / 64;
@@ -811,7 +811,7 @@ int incRegMem(uint8_t* text, int curr)
     return read;
 }
 
-int incReg(uint8_t* text, int curr, int id)
+int arithIncDec(uint8_t* text, int curr, int id)
 {
     uint8_t reg = text[curr] % 8;
     printReadBytes(1, text, curr);
@@ -838,7 +838,7 @@ int incReg(uint8_t* text, int curr, int id)
     return 1;
 }
 
-int aaaBaa(uint8_t* text, int curr, int id)
+int arithAdjustConvert(uint8_t* text, int curr, int id)
 {
     int read = 1;
     if(id == 4)
@@ -878,7 +878,7 @@ int aaaBaa(uint8_t* text, int curr, int id)
     return read;
 }
 
-int negMul(uint8_t* text, int curr)
+int arithMultDiv(uint8_t* text, int curr)
 {
     uint8_t word = text[curr] % 2;
     uint8_t mod = text[curr+1] / 64;

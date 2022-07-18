@@ -53,7 +53,7 @@ int controlDirect(uint8_t* text, int curr, int id)
     return read;
 }
 
-int jumpShort(uint8_t* text, int curr)
+int controlJumpShort(uint8_t* text, int curr)
 {
     int8_t disp = text[curr+1];
     printReadBytes(2, text, curr);
@@ -169,7 +169,7 @@ int controlSimpleCommands(uint8_t* text, int curr, int id)
     return read;
 }
 
-int conditionalJump(uint8_t* text, int curr)
+int controlConditionalJump(uint8_t* text, int curr)
 {
     uint8_t id = text[curr] % 16;
     uint16_t disp = (int8_t) text[curr+1];
@@ -316,7 +316,7 @@ int conditionalJump(uint8_t* text, int curr)
     return read;
 }
 
-int conditionalLoop(uint8_t* text, int curr)
+int controlConditionalLoop(uint8_t* text, int curr)
 {
     uint8_t id = text[curr] % 4;
     uint16_t disp = (int8_t) text[curr+1];
@@ -342,7 +342,7 @@ int conditionalLoop(uint8_t* text, int curr)
     return 2;
 }
 
-int intTypeSpec(uint8_t* text, int curr)
+int controlSyscall(uint8_t* text, int curr)
 {
     uint8_t type = text[curr+1];
     printReadBytes(2, text, curr);
@@ -353,7 +353,7 @@ int intTypeSpec(uint8_t* text, int curr)
     return 2;
 }
 
-int escape(uint8_t* text, int curr)
+int controlEscape(uint8_t* text, int curr)
 {
     uint8_t mod = text[curr+1] / 64;
     uint8_t rm = text[curr+1] % 8;

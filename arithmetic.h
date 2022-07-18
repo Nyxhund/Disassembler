@@ -1,18 +1,18 @@
 #ifndef _ARITHMETIC_H
 #define _ARITHMETIC_H
 
-int regMemAddReg(uint8_t* text, int curr, int id);
+int arithOpe(uint8_t* text, int curr, int id);
 
-int immediateAddRegMem(uint8_t* text, int curr);
+int arithOpeImmediate(uint8_t* text, int curr);
 
-int immediateToAccu(uint8_t* text, int curr, int id);
+int arithOpeImmediateToAccu(uint8_t* text, int curr, int id);
 
-int incRegMem(uint8_t* text, int curr);
+int arithIncJump(uint8_t* text, int curr);
 
-int incReg(uint8_t* text, int curr, int id);
+int arithIncDec(uint8_t* text, int curr, int id);
 
-int aaaBaa(uint8_t* text, int curr, int id);
+int arithAdjustConvert(uint8_t* text, int curr, int id);
 
-int negMul(uint8_t* text, int curr);
+int arithMultDiv(uint8_t* text, int curr);
 
 #endif

@@ -11,7 +11,7 @@
 #include "utility.h"
 
 
-int shifts(uint8_t* text, int curr)
+int logicShifts(uint8_t* text, int curr)
 {
     uint8_t w = text[curr] % 2;
     uint8_t v = (text[curr] % 4) / 2;
@@ -556,7 +556,7 @@ int logicImmediateToRegMem(uint8_t* text, int curr)
     return read;
 }
 
-int stringManipulation(uint8_t* text, int curr, int id)
+int logicStringManipulation(uint8_t* text, int curr, int id)
 {
     // Not tested, does not appear in files 1-6.c
     uint8_t w = text[curr] % 2;

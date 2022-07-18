@@ -2,37 +2,27 @@
 #define _DATATRANSFER_H
 
 
-int RegMemtofromReg(uint8_t* text, int curr, uint8_t dir, uint8_t word);
+int dataTransferOpe(uint8_t* text, int curr, uint8_t dir, uint8_t word);
 
-int immediateToRegMem(uint8_t* text, int curr, uint8_t word);
+int dataTransferOpeImmediate(uint8_t* text, int curr, uint8_t word);
 
-void immediateToRegister(uint8_t* text, int curr);
+void dataTransferImmediateRegister(uint8_t* text, int curr);
 
-int memoryToFromAccu(uint8_t* text, int curr, uint8_t word, uint8_t dir);
+int dataTransferAccu(uint8_t* text, int curr, uint8_t word, uint8_t dir);
 
-int regMemToFromSeg(uint8_t* text, int curr, uint8_t dir);
+int dataTransferSeg(uint8_t* text, int curr, uint8_t dir);
 
-// PUSH
+int dataTransferPushPopOpe(uint8_t* text, int curr, int pop);
 
-int pushPopRegMem(uint8_t* text, int curr, int pop);
+int dataTransferPushPopRegister(uint8_t* text, int curr, int pop);
+int dataTransferPushPopSeg(uint8_t* text, int curr, int pop);
 
-int pushPopReg(uint8_t* text, int curr, int pop);
-int pushPopSeg(uint8_t* text, int curr, int pop);
+int dataTransferXchg(uint8_t* text, int curr);
 
-// XCHG
+int dataTransferXchgAccu(uint8_t* text, int curr);
 
-int xchgRegMemWReg(uint8_t* text, int curr);
+int dataTransferInOut(uint8_t* text, int curr, int port, int out);
 
-int xchgRegAccu(uint8_t* text, int curr);
-
-// IN & OUT
-
-int inOutFromTo(uint8_t* text, int curr, int port, int out);
-
-// XLAT NOT DONE
-
-// LEA, LDS, LES
-
-int leaLdsLes(uint8_t* text, int curr, int id);
+int dataTransferLeaLdsLes(uint8_t* text, int curr, int id);
 
 #endif

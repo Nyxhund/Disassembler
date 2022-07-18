@@ -3,16 +3,16 @@
 
 int controlDirect(uint8_t* text, int curr, int id);
 
-int jumpShort(uint8_t* text, int curr);
+int controlJumpShort(uint8_t* text, int curr);
 
 int controlSimpleCommands(uint8_t* text, int curr, int id);
 
-int conditionalJump(uint8_t* text, int curr);
+int controlConditionalJump(uint8_t* text, int curr);
 
-int conditionalLoop(uint8_t* text, int curr);
+int controlConditionalLoop(uint8_t* text, int curr);
 
-int intTypeSpec(uint8_t* text, int curr);
+int controlSyscall(uint8_t* text, int curr);
 
-int escape(uint8_t* text, int curr);
+int controlEscape(uint8_t* text, int curr);
 
 #endif
